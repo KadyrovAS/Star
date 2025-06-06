@@ -3,18 +3,18 @@ package star.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import star.repository.RulesRepository;
+import star.repository.CheckRepository;
 
 import java.util.List;
 import java.util.UUID;
 
 
 @Service
-public class RulesService{
-    private final RulesRepository repository;
-    private static final Logger logger = LoggerFactory.getLogger(RulesService.class);
+public class CheckService{
+    private final CheckRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(CheckService.class);
 
-    public RulesService(RulesRepository repository) {
+    public CheckService(CheckRepository repository) {
         this.repository = repository;
     }
 

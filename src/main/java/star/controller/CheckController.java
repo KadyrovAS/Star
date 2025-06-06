@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import star.service.AmountByType;
-import star.service.RulesService;
+import star.service.CheckService;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-public class RulesController{
-    private final RulesService service;
+public class CheckController{
+    private final CheckService service;
 
-    public RulesController(RulesService service) {
+    public CheckController(CheckService service) {
         this.service = service;
     }
 

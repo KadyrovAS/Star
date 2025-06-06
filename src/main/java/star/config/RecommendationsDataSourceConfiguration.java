@@ -11,19 +11,35 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Configuration
 public class RecommendationsDataSourceConfiguration {
 
-    @Bean(name = "recommendationsDataSource")
-    public DataSource recommendationsDataSource(@Value("${application.recommendations-db.url}") String recommendationsUrl) {
+    @Bean(name = "rulesDataSource")
+    public DataSource rulesDataSource(@Value("${application.rules.url}") String rulesUrl){
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(recommendationsUrl);
+        dataSource.setJdbcUrl(rulesUrl);
         dataSource.setDriverClassName("org.h2.Driver");
         dataSource.setReadOnly(true);
         return dataSource;
     }
 
-    @Bean(name = "recommendationsJdbcTemplate")
-    public JdbcTemplate recommendationsJdbcTemplate(
-            @Qualifier("recommendationsDataSource") DataSource dataSource
+    @Bean(name = "transactionsDataSource")
+    public DataSource transactionsDataSource(@Value("${application.transactions-db.url}") String transactionsUrl) {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(transactionsUrl);
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setReadOnly(true);
+        return dataSource;
+    }
+
+    @Bean(name = "transactionsJdbcTemplate")
+    public JdbcTemplate transactionsJdbcTemplate(
+            @Qualifier("transactionsDataSource") DataSource dataSource
     ) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean(name = "rulesJdbcTemplate")
+    public JdbcTemplate rulesJdbcTemplate(
+            @Qualifier("rulesDataSource") DataSource dataSource
+    ){
         return new JdbcTemplate(dataSource);
     }
 }
