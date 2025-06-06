@@ -1,5 +1,7 @@
 package star.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import star.repository.RulesRepository;
 
@@ -10,12 +12,24 @@ import java.util.UUID;
 @Service
 public class RulesService{
     private final RulesRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(RulesService.class);
 
     public RulesService(RulesRepository repository) {
         this.repository = repository;
     }
 
-    public List<String> getProductsType(UUID id){
+    public List<String> getTypes(UUID id){
+        logger.info("getTypes: id = " + id);
+        return repository.getTypes(id);
+    }
 
+    public Integer getSum(UUID id, String type){
+        logger.info("id = ?, type = '?'", id, type);
+        return repository.getSum(id, type);
+    }
+
+    public List<AmountByType>getAmountsByTypes(UUID id){
+        logger.info("id = " + id);
+        return repository.getAmountsByTypes(id);
     }
 }

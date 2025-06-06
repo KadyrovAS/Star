@@ -21,4 +21,5 @@ public class StarService{
         logger.info("getRandomTransactionAmount: " + uuid);
         return repository.getRandomTransactionAmount(uuid);
     }
+
 }
