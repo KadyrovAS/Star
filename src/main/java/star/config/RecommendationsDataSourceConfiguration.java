@@ -1,4 +1,4 @@
-package config;
+package star.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
