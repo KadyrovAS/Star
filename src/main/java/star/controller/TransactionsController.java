@@ -6,17 +6,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import star.service.AmountByType;
-import star.service.CheckService;
+import star.model.UserTransaction;
+import star.service.TransactionsService;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-public class CheckController{
-    private final CheckService service;
+public class TransactionsController {
+    private final TransactionsService service;
 
-    public CheckController(CheckService service) {
+    public TransactionsController(TransactionsService service) {
         this.service = service;
     }
 
@@ -36,8 +36,14 @@ public class CheckController{
     }
 
     @GetMapping(value = "/{id}AmountByTypes")
-    public ResponseEntity<List<AmountByType>> getAmountsByTypes(@PathVariable UUID id){
-        List<AmountByType>result = service.getAmountsByTypes(id);
+    public ResponseEntity<List<UserTransaction>> getAmountsByTypes(@PathVariable UUID id){
+        List<UserTransaction>result = service.getAmountsByTypes(id);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/users")
+    public ResponseEntity<List<UUID>>getUsers(){
+        List<UUID>list = service.getUsers();
+        return ResponseEntity.ok(list);
     }
 }

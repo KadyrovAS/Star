@@ -6,18 +6,33 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
-public class RecommendationsDataSourceConfiguration {
+public class DataSourceConfiguration {
 
     @Bean(name = "rulesDataSource")
     public DataSource rulesDataSource(@Value("${application.rules.url}") String rulesUrl){
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setJdbcUrl(rulesUrl);
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setReadOnly(true);
         return dataSource;
+    }
+
+    @Bean
+    public DataSourceInitializer rulesDataSourceInitializer(
+            @Qualifier("rulesDataSource") DataSource dataSource) {
+        DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setDataSource(dataSource);
+
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("schema-init.sql"));
+
+        initializer.setDatabasePopulator(populator);
+        return initializer;
     }
 
     @Bean(name = "transactionsDataSource")
