@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import star.model.Rule;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class RulesRepository {
@@ -23,11 +24,8 @@ public class RulesRepository {
         return jdbcTemplate.query(
                 "SELECT * FROM RULES",
                 (rs, rowNum) -> new Rule(
-                        rs.getString("NAME"),
-                        rs.getString("PRODUCT_TYPE"),
-                        rs.getString("TRANSACTION_TYPE"),
-                        rs.getInt("AMOUNT"),
-                        rs.getString("CONDITION"),
+                        rs.getObject("ID", UUID.class),
+                        rs.getString("INSTRUCTION"),
                         rs.getString("ANNOTATION")
                 )
         );
@@ -37,23 +35,16 @@ public class RulesRepository {
         logger.info(rule.toString());
         jdbcTemplate.update(
                 "INSERT INTO RULES (" +
-                        "NAME, PRODUCT_TYPE, TRANSACTION_TYPE, AMOUNT, CONDITION, ANNOTATION" +
-                        ") VALUES (?, ?, ?, ?, ?, ?)",
-                rule.getName(),
-                rule.getProductType(),
-                rule.getTransactionType(),
-                rule.getAmount(),
-                rule.getCondition(),
+                        "ID, INSTRUCTION, ANNOTATION" +
+                        ") VALUES (?, ?, ?)",
+                rule.getId(),
+                rule.getInstruction(),
                 rule.getAnnotation()
         );
         return rule;
     }
 
-    public void delete(String name) {
-        if (name.equals("ALL")) {
-            jdbcTemplate.execute("DELETE FROM RULES");
-        } else {
-            jdbcTemplate.execute("DELETE FROM RULES WHERE NAME = '" + name + "'");
-        }
+    public void delete(UUID id) {
+        jdbcTemplate.execute("DELETE FROM RULES WHERE ID = '" + id + "'");
     }
 }

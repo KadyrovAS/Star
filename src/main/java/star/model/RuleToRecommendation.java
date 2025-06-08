@@ -3,34 +3,28 @@ package star.model;
 import java.util.UUID;
 
 public class RuleToRecommendation {
-    private final UUID id;
-    private final int part;
-    private final String ruleName;
+    private final UUID recommendationId;
+    private final UUID ruleId;
 
-    public RuleToRecommendation(UUID id, int part, String ruleName) {
-        this.id = id;
-        this.part = part;
-        this.ruleName = ruleName;
+
+    public RuleToRecommendation(UUID recommendationId, UUID ruleId) {
+        this.recommendationId = recommendationId;
+        this.ruleId = ruleId;
     }
 
-    public UUID getId() {
-        return id;
+    public UUID getRecommendationId() {
+        return recommendationId;
     }
 
-    public int getPart() {
-        return part;
-    }
-
-    public String getRuleName() {
-        return ruleName;
+    public UUID getRuleId() {
+        return ruleId;
     }
 
     @Override
     public String toString() {
         return "RuleToRecommendation{" +
-                "recommendationId='" + id + '\'' +
-                ", part=" + part +
-                ", ruleName='" + ruleName + '\'' +
+                "recommendationId=" + recommendationId +
+                ", ruleId=" + ruleId +
                 '}';
     }
 }

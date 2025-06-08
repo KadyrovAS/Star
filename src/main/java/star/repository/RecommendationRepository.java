@@ -20,65 +20,33 @@ public class RecommendationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<RuleToRecommendation> getRecommendations() {
+    public List<Recommendation> getRecommendations() {
         logger.info("getRecommendations");
         return jdbcTemplate.query(
-                "SELECT * FROM RECOMMENDATION_RULES",
-                (rs, rowNum) -> new RuleToRecommendation(
-                        rs.getObject("ID", UUID.class),
-                        rs.getInt("PART"),
-                        rs.getString("RULE_NAME")
-                )
-        );
-    }
-
-    public RuleToRecommendation addRecommendation(RuleToRecommendation ruleToRecommendation) {
-        logger.info(ruleToRecommendation.toString());
-        jdbcTemplate.update(
-                "INSERT INTO RECOMMENDATION_RULES (" +
-                        "ID, PART, RULE_NAME" +
-                        ") VALUES (?, ?, ?)",
-                ruleToRecommendation.getId(),
-                ruleToRecommendation.getPart(),
-                ruleToRecommendation.getRuleName()
-        );
-        return ruleToRecommendation;
-    }
-
-    public void delete(UUID id) {
-            jdbcTemplate.execute("DELETE FROM RECOMMENDATION_RULES WHERE " +
-                    "ID = '" + id + "'");
-    }
-
-    public List<RuleToRecommendation>getRecommendationNamesWithPart(){
-        return jdbcTemplate.query(
-                "SELECT DISTINCT ID, PART FROM RECOMMENDATION_RULES",
-                (rs, rowNum)->new RuleToRecommendation(
-                        rs.getObject("ID", UUID.class),
-                        rs.getInt("PART"),
-                        null
-                )
-        );
-    }
-
-    public List<String>getRulesByRecommendations(RuleToRecommendation ruleToRecommendation){
-        return jdbcTemplate.queryForList(
-            "SELECT RULE_NAME FROM RECOMMENDATION_RULES WHERE ID = ? AND PART = ?",
-                String.class,
-                ruleToRecommendation.getId(),
-                ruleToRecommendation.getPart()
-        );
-    }
-
-    public List<Recommendation>getRecommendationById(UUID id){
-        return jdbcTemplate.query(
-                "SELECT * FROM RECOMMENDATION WHERE ID = '" + id + "'",
-                (rs, rowNum)->new Recommendation(
+                "SELECT * FROM RECOMMENDATION",
+                (rs, rowNum) -> new Recommendation(
                         rs.getObject("ID", UUID.class),
                         rs.getString("NAME"),
                         rs.getString("ANNOTATION")
                 )
         );
+    }
+
+    public Recommendation addRecommendation(Recommendation recommendation){
+        logger.info("addRecommendation: " + recommendation);
+        jdbcTemplate.update("INSERT INTO RECOMMENDATION (" +
+            "ID, NAME, ANNOTATION) " +
+            "VALUES (?, ?, ?)",
+            recommendation.getId(),
+            recommendation.getName(),
+            recommendation.getAnnotation()
+        );
+        return recommendation;
+    }
+
+    public void delete(UUID id) {
+            jdbcTemplate.execute("DELETE FROM RECOMMENDATION WHERE " +
+                    "ID = '" + id + "'");
     }
 
 }

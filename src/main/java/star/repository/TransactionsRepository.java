@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import star.model.UserTransaction;
+import star.model.Transaction;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,13 +40,13 @@ public class TransactionsRepository {
         );
     }
 
-    public List<UserTransaction> getAmountsByTypes(UUID id) {
+    public List<Transaction> getAmountsByTypes(UUID id) {
         logger.info("id = {}", id);
         return jdbcTemplate.query(
                 "SELECT PRODUCTS.TYPE AS PRODUCT_TYPE, TRANSACTIONS.TYPE AS TRANSACTION_TYPE, SUM(AMOUNT) AS AMOUNT FROM\n" +
                         "TRANSACTIONS LEFT JOIN PRODUCTS ON PRODUCT_ID = PRODUCTS.ID WHERE USER_ID = ?" +
                         " GROUP BY TRANSACTIONS.TYPE, PRODUCT_TYPE ",
-                (rs, rowNum)->new UserTransaction(
+                (rs, rowNum)->new Transaction(
                         rs.getInt("AMOUNT"),
                         rs.getString("TRANSACTION_TYPE"),
                         rs.getString("PRODUCT_TYPE")

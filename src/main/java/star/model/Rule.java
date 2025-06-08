@@ -1,63 +1,39 @@
 package star.model;
 
+import java.util.UUID;
+
 public class Rule{
-    private String name;
-    private String productType;
-    private String transactionType;
-    private int amount;
-    private String condition;
+    private UUID id;
+    private String instruction;
     private String annotation;
 
-    public Rule(String name,
-                String productType,
-                String transactionType,
-                int amount,
-                String condition,
-                String annotation) {
-        this.name = name;
-        this.productType = productType;
-        this.transactionType = transactionType;
-        this.amount = amount;
-        this.condition = condition;
+    public Rule(UUID id, String instruction, String annotation) {
+        this.id = id;
+        this.instruction = instruction;
         this.annotation = annotation;
     }
 
-    public String getName() {
-        return name;
+    public UUID getId() {
+        return id;
     }
 
-    public String getProductType() {
-        return productType;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public String getCondition() {
-        return condition;
+    public String getInstruction() {
+        return instruction;
     }
 
     public String getAnnotation() {
         return annotation;
     }
 
-    public void setAnnotation(String annotation) {
-        this.annotation = annotation;
+    public void setId(UUID id){
+        this.id = id;
     }
 
     @Override
     public String toString() {
         return "Rule{" +
-                "ruleName='" + name + '\'' +
-                ", productType='" + productType + '\'' +
-                ", transactionType='" + transactionType + '\'' +
-                ", amount=" + amount +
-                ", condition='" + condition + '\'' +
+                "id=" + id +
+                ", Instruction='" + instruction + '\'' +
                 ", annotation='" + annotation + '\'' +
                 '}';
     }

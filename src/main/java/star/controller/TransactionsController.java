@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import star.model.UserTransaction;
+import star.model.Transaction;
 import star.service.TransactionsService;
 
 import java.util.List;
@@ -36,8 +36,8 @@ public class TransactionsController {
     }
 
     @GetMapping(value = "/{id}AmountByTypes")
-    public ResponseEntity<List<UserTransaction>> getAmountsByTypes(@PathVariable UUID id){
-        List<UserTransaction>result = service.getAmountsByTypes(id);
+    public ResponseEntity<List<Transaction>> getAmountsByTypes(@PathVariable UUID id){
+        List<Transaction>result = service.getAmountsByTypes(id);
         return ResponseEntity.ok(result);
     }
 

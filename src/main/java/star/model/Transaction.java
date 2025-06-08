@@ -1,11 +1,12 @@
 package star.model;
 
-public class UserTransaction {
-    private int amount;
-    private String transactionType;
-    private String productType;
+public class Transaction {
+    private final int amount;
+    private final String transactionType;
+    private final String productType;
 
-    public UserTransaction(int amount, String transactionType, String productType) {
+
+    public Transaction(int amount, String transactionType, String productType) {
         this.amount = amount;
         this.transactionType = transactionType;
         this.productType = productType;
@@ -23,12 +24,17 @@ public class UserTransaction {
         return productType;
     }
 
+    public boolean transactionTypeEquals(String type) {
+        return type.equals("AMOUNT") || type.equals("DIFFERENCE") || type.equals(transactionType);
+    }
+
     @Override
     public String toString() {
-        return "UserTransaction{" +
+        return "Transaction{" +
                 "amount=" + amount +
                 ", transactionType='" + transactionType + '\'' +
                 ", productType='" + productType + '\'' +
                 '}';
     }
+
 }

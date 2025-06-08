@@ -3,7 +3,7 @@ package star.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import star.model.UserTransaction;
+import star.model.Transaction;
 import star.repository.TransactionsRepository;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class TransactionsService {
         return repository.getSum(id, type);
     }
 
-    public List<UserTransaction> getAmountsByTypes(UUID id) {
+    public List<Transaction> getAmountsByTypes(UUID id) {
         logger.info("id = {}", id);
         return repository.getAmountsByTypes(id);
     }

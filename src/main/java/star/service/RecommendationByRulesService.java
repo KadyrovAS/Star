@@ -3,32 +3,30 @@ package star.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import star.model.Rule;
-import star.repository.RulesRepository;
+import star.model.RuleToRecommendation;
+import star.repository.RecommendationByRulesRepository;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class RuleService {
-    private final RulesRepository repository;
+public class RecommendationByRulesService {
+    private final RecommendationByRulesRepository repository;
     private static final Logger logger = LoggerFactory.getLogger(RuleService.class);
 
-    public RuleService(RulesRepository repository) {
+    public RecommendationByRulesService(RecommendationByRulesRepository repository) {
         this.repository = repository;
     }
 
-    public List<Rule> getRules(){
+    public List<RuleToRecommendation> getRules(){
         return repository.getRules();
     }
 
-    public Rule addRule(Rule rule){
-
+    public RuleToRecommendation addRule(RuleToRecommendation rule){
         return repository.addRule(rule);
     }
 
     public void deleteRule(UUID id){
-        logger.info(id.toString());
         repository.delete(id);
     }
 }

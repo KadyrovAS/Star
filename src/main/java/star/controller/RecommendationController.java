@@ -14,23 +14,18 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/recommendations")
-public class RuleToRecommendationController {
+public class RecommendationController {
     private final RecommendationService service;
-    private static final Logger logger = LoggerFactory.getLogger(RuleToRecommendationController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecommendationController.class);
 
-    public RuleToRecommendationController(RecommendationService service) {
+    public RecommendationController(RecommendationService service) {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<RuleToRecommendation>>getRecommendations(){
-        List<RuleToRecommendation>list = service.getRecommendations();
-        return ResponseEntity.ok(list);
-    }
 
     @PostMapping
-    public RuleToRecommendation addRecommendation(@RequestBody RuleToRecommendation ruleToRecommendation){
-        return service.addRecommendation(ruleToRecommendation);
+    public Recommendation addRecommendation(@RequestBody Recommendation recommendation){
+        return service.addRecommendation(recommendation);
     }
 
     @DeleteMapping
