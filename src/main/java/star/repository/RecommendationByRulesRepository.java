@@ -34,13 +34,11 @@ public class RecommendationByRulesRepository {
 
     public List<UUID> getRules(UUID id){
         logger.info("getRules by ID: {}", id );
-        return jdbcTemplate.queryForList(
+        return jdbcTemplate.query(
         "SELECT RULE_ID FROM RECOMMENDATION_RULES WHERE RECOMMENDATION_ID = ?",
-                String.class,
+                (rs, rowNum)->rs.getObject("RULE_ID", UUID.class),
                 id.toString()
-                ).stream()
-                .map(UUID::fromString)
-                .collect(Collectors.toList());
+        );
     }
 
     public RuleToRecommendation addRule(RuleToRecommendation ruleToRecommendation) {
