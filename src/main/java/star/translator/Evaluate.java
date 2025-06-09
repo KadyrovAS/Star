@@ -1,5 +1,7 @@
 package star.translator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import star.model.Transaction;
 
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.List;
 public class Evaluate {
     private List<Transaction> transactions;
     private String[] keyWords = {"DEPOSIT", "WITHDRAW", "AMOUNT", "DIFFERENCE"};
+    private static final Logger logger = LoggerFactory.getLogger(Evaluate.class);
 
     public Evaluate(List<Transaction> transactions) {
         this.transactions = transactions;
@@ -40,6 +43,11 @@ public class Evaluate {
     return toCompare(rule);
     }
 
+    /**
+     * Раскрывает скобки в сложном выражении
+     * @param rule
+     * @return
+     */
     private String toTranslate(String rule){
         int indStart;
         int indEnd;
@@ -62,6 +70,11 @@ public class Evaluate {
     return rule;
     }
 
+    /**
+     * Вычисляет обороты по счетам в зависимости от типа транзакции и типа товара
+     * @param rule
+     * @return
+     */
     private int toCalculate(String rule){
         int indStart;
         int indEnd;
@@ -94,6 +107,12 @@ public class Evaluate {
         return amount;
     }
 
+    /**
+     * Вычисляет сложное выражение по частям
+     *
+     * @param text
+     * @return
+     */
     private String toSimplify(String text){
         int indStart;
         int indEnd;
@@ -116,77 +135,67 @@ public class Evaluate {
             text.substring(indEnd);
         }
 
-
-        if (text.indexOf("AND") > 0){
-            indStart = text.indexOf("AND") + 3;
-            indEnd = text.length();
-            for (int i = indStart; i < text.length(); i++){
-                if (text.startsWith("AND", i) || text.startsWith("OR", i)){
-                    indEnd = i;
-                    break;
+        String[] operators = {"AND", "OR"};
+        for (String op: operators) {
+            if (text.indexOf(op) > 0) {
+                indStart = text.indexOf(op) + op.length();
+                indEnd = text.length();
+                for (int i = indStart; i < text.length(); i++) {
+                    if (text.startsWith(operators[0], i) || text.startsWith(operators[1], i)) {
+                        indEnd = i;
+                        break;
+                    }
                 }
-            }
-            evaluate1 = text.substring(indStart, indEnd);
+                evaluate1 = text.substring(indStart, indEnd);
 
-            indStart = 0;
-            for (int i = indStart - 4; i >= 0; i--){
-                if (text.startsWith("AND", i) ){
-                    indStart = i + 3;
-                    break;
-                } else if (text.startsWith("OR", i)) {
-                    indStart = i + 2;
-                    break;
+                indStart = 0;
+                for (int i = indStart - op.length() - 1; i >= 0; i--) {
+                    if (text.startsWith(op, i)) {
+                        indStart = i + op.length();
+                        break;
+                    }
                 }
+                evaluate2 = text.substring(indStart, text.indexOf(op));
+
+                text = text.substring(0, indStart) +
+                        checkCondition(evaluate1, evaluate2, op) +
+                        text.substring(indEnd);
+                text = toSimplify(text);
             }
-            evaluate2 = text.substring(indStart, text.indexOf("AND"));
 
-            text = text.substring(0, indStart) +
-            checkCondition(evaluate1, evaluate2, "AND") +
-                    text.substring(indEnd);
-            text = toSimplify(text);
-        }
-
-        if (text.indexOf("OR") > 0){
-            indStart = text.indexOf("OR") + 3;
-            indEnd = text.length();
-            for (int i = indStart; i < text.length(); i++){
-                if (text.startsWith("OR", i)){
-                    indEnd = i;
-                    break;
-                }
-            }
-            evaluate1 = text.substring(indStart, indEnd);
-
-            indStart = 0;
-            for (int i = indStart - 4; i >= 0; i--){
-                if (text.startsWith("OR", i)) {
-                    indStart = i + 2;
-                    break;
-                }
-            }
-            evaluate2 = text.substring(indStart, text.indexOf("OR"));
-
-            text = text.substring(0, indStart) +
-                    checkCondition(evaluate1, evaluate2, "OR") +
-                    text.substring(indEnd);
-            text = toSimplify(text);
         }
 
         return text;
     }
 
+    /**
+     * На вход поступает два логических выражения, соединенных логическим оператором AND или OR
+     * Результатом является
+     * @param evaluate1
+     * @param evaluate2
+     * @param operation
+     * @return
+     */
     private String checkCondition(String evaluate1, String evaluate2, String operation){
         boolean arg1 = toCompare(evaluate1);
         boolean arg2 = toCompare(evaluate2);
 
-        if (operation.equals("AND") && arg1 && arg2){
-            return "true";
-        }else if(operation.equals("OR") && (arg1 || arg2)){
-            return "true";
+        if (operation.equals("AND")){
+            return String.valueOf(arg1 && arg2) ;
+        }else if(operation.equals("OR")){
+            return String.valueOf(arg1 || arg2);
         }
-        return "false";
+
+        logger.info("Неверный логический оператор: '{}'", operation);
+        throw new IllegalArgumentException("Неверный логический оператор: " + operation);
     }
 
+    /**
+     * Получает на вход выражение типа x > y, где x и y - целые числа.
+     * Возвращает результат сравнения (true или false).
+     * @param evaluate
+     * @return
+     */
     private boolean toCompare(String evaluate){
         String[] operations = {"<>", ">=", "<=", "<", ">", "="};
         if (evaluate.strip().equals("true")){
@@ -223,7 +232,8 @@ public class Evaluate {
                 }
             }
         }
-        return false;
+        logger.info("Ошибка в выражении: '{}'", evaluate);
+        throw new IllegalArgumentException("Ошибка в выражении: " + evaluate);
     }
 
     @Override

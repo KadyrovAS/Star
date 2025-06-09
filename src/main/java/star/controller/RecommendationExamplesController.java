@@ -15,7 +15,7 @@ public class RecommendationExamplesController {
 
     @PostMapping
     public ResponseEntity<String> insertExampleRecords(){
-        service.addRecommendation();
+        service.addExample();
         return ResponseEntity.ok("Записи добавлены");
     }
 

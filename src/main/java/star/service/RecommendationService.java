@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class RecommendationService {
+public class RecommendationService{
     private final RecommendationRepository repository;
     private final RulesRepository rulesRepository;
     private final TransactionsRepository transactionsRepository;
@@ -32,22 +32,22 @@ public class RecommendationService {
         this.recommendationByRulesRepository = recommendationByRulesRepository;
     }
 
-    public List<Recommendation> getRecommendations(){
+    public List<Recommendation> getRecommendations() {
         logger.info("getRecommendations");
         return repository.getRecommendations();
     }
 
-    public Recommendation addRecommendation(Recommendation recommendation){
+    public Recommendation addRecommendation(Recommendation recommendation) {
         logger.info("addRecommendation: " + recommendation);
         return repository.addRecommendation(recommendation);
     }
 
-    public void deleteRecommendation(UUID id){
+    public void deleteRecommendation(UUID id) {
         logger.info("deleteRecommendation: {}", id);
         repository.delete(id);
     }
 
-     public Collection<Recommendation> getRecommendation(UUID id) {
+    public Collection<Recommendation> getRecommendation(UUID id) {
         logger.info("Запрос рекомендации для {}", id.toString());
         Map<UUID, Boolean> mapWithResult = new HashMap<>();
         Set<Recommendation> setWithRecommendations = new HashSet<>();
@@ -55,23 +55,23 @@ public class RecommendationService {
         List<Transaction> transactions = transactionsRepository.getAmountsByTypes(id);
         Evaluate evaluate = new Evaluate(transactions);
 
-         for (Rule rule: rules){
-             boolean result = evaluate.toEvaluate(rule.getInstruction());
-             mapWithResult.put(rule.getId(), result);
-         }
+        for (Rule rule : rules) {
+            boolean result = evaluate.toEvaluate(rule.getInstruction());
+            mapWithResult.put(rule.getId(), result);
+        }
 
-         for (Recommendation recommendation: repository.getRecommendations()){
-             boolean isRule = true;
-             for (UUID uuid: recommendationByRulesRepository.getRules(recommendation.getId())){
-                 if (!mapWithResult.get(uuid)){
-                     isRule = false;
-                     break;
-                 }
-                 if (isRule){
-                     setWithRecommendations.add(recommendation);
-                 }
-             }
-         }
+        for (Recommendation recommendation : repository.getRecommendations()) {
+            boolean isRule = true;
+            for (UUID uuid : recommendationByRulesRepository.getRules(recommendation.getId())) {
+                if (!mapWithResult.get(uuid)) {
+                    isRule = false;
+                    break;
+                }
+            }
+            if (isRule) {
+                setWithRecommendations.add(recommendation);
+            }
+        }
         return setWithRecommendations;
     }
 }

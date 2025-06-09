@@ -1,12 +1,17 @@
 package star.translator;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 import star.model.Transaction;
+import star.repository.TransactionsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class Main {
     public static void main(String[] args) {
+
         List<Transaction> transactions = new ArrayList<>();
 
         transactions.add(new Transaction(93972, "DEPOSIT", "CREDIT"));
