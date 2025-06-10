@@ -36,7 +36,7 @@ public class RecommendationExampleRepository {
     public void addRule(Rule rule){
         logger.info("addRule");
         jdbcTemplate.update(
-                "INSERT INTO RULES (ID, INSTRUCTION, ANNOTATION) VALUES (?, ?, ?)",
+                "INSERT INTO RULE (ID, INSTRUCTION, ANNOTATION) VALUES (?, ?, ?)",
                 rule.getId(),
                 rule.getInstruction(),
                 rule.getAnnotation()

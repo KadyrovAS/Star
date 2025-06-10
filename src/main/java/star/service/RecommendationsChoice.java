@@ -1,10 +1,15 @@
-package star.translator;
+package star.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import star.model.Recommendation;
+import star.model.Recommendations;
+import star.model.Rule;
 import star.model.Transaction;
+import star.repository.StarRepository;
 
-import java.util.List;
+import java.util.*;
 
 /**
  *  Анализирует тип транзакции по ключевым словам: DEPOSIT, WITHDRAW, AMOUNT, DIFFERENCE
@@ -28,13 +33,45 @@ import java.util.List;
  *
  *  Результатом логического выражения должна быть ложь или истина.
  */
-public class Evaluate {
+
+@Component("recommendationsChoice")
+
+public class RecommendationsChoice implements RecommendationRuleSet {
+    private final StarRepository repository;
     private List<Transaction> transactions;
     private String[] keyWords = {"DEPOSIT", "WITHDRAW", "AMOUNT", "DIFFERENCE"};
-    private static final Logger logger = LoggerFactory.getLogger(Evaluate.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecommendationsChoice.class);
 
-    public Evaluate(List<Transaction> transactions) {
-        this.transactions = transactions;
+    public RecommendationsChoice(StarRepository repository) {
+        this.repository = repository;
+    }
+
+
+    @Override
+    public Optional<Recommendations> getRecommendation(UUID id) {
+        Map<UUID, Boolean> mapWithResult = new HashMap<>();
+        List<Recommendation> recommendations = new LinkedList<>();
+
+        this.transactions = repository.getAmountsByTypes(id);
+
+        for (Rule rule: repository.getAllRules()){
+            mapWithResult.put(rule.getId(), toEvaluate(rule.getInstruction()));
+        }
+
+        for (Recommendation recommendation : repository.getRecommendations()) {
+            boolean isRule = true;
+            for (UUID uuid : repository.getRulesById(recommendation.getId())) {
+                if (!mapWithResult.get(uuid)) {
+                    isRule = false;
+                    break;
+                }
+            }
+            if (isRule) {
+                recommendations.add(recommendation);
+            }
+        }
+
+        return Optional.of(new Recommendations(id, recommendations));
     }
 
     public boolean toEvaluate(String rule){
@@ -242,4 +279,5 @@ public class Evaluate {
                 "transactions=" + transactions +
                 '}';
     }
+
 }
