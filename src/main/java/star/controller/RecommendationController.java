@@ -1,5 +1,7 @@
 package star.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,15 @@ public class RecommendationController {
     }
 
     @GetMapping(value = "/{id}")
+    @Operation(
+            summary = "Получить клиента по ID",
+            description = "Возвращает список рекомендаций для клиента"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Сформирован список рекомендаций, либо пустой массив, если рекомендаций нет"
+    )
+
     public ResponseEntity<Recommendations> getRecommendation(@PathVariable UUID id){
         logger.info("Запрос рекомендации для {}", id);
         return ResponseEntity.ok(service.getRecommendations(id).orElse(new Recommendations(id, new Recommendation[0])));

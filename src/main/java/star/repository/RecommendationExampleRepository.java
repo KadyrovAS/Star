@@ -56,6 +56,6 @@ public class RecommendationExampleRepository {
         logger.info("deleteAll");
         jdbcTemplate.update("DELETE FROM RECOMMENDATION");
         jdbcTemplate.update("DELETE FROM RECOMMENDATION_RULES");
-        jdbcTemplate.update("DELETE FROM RULES");
+        jdbcTemplate.update("DELETE FROM RULE");
     }
 }
