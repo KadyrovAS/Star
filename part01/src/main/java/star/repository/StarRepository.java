@@ -27,9 +27,11 @@ public class StarRepository{
     public List<Transaction> getAmountsByTypes(UUID id) {
         logger.info("id = {}", id);
         return transactionsJdbcTemplate.query(
-                "SELECT PRODUCTS.TYPE AS PRODUCT_TYPE, TRANSACTIONS.TYPE AS TRANSACTION_TYPE, SUM(AMOUNT) AS AMOUNT FROM\n" +
-                        "TRANSACTIONS LEFT JOIN PRODUCTS ON PRODUCT_ID = PRODUCTS.ID WHERE USER_ID = ?" +
-                        " GROUP BY TRANSACTIONS.TYPE, PRODUCT_TYPE ",
+                """
+                        SELECT PRODUCTS.TYPE AS PRODUCT_TYPE, TRANSACTIONS.TYPE AS TRANSACTION_TYPE, SUM(AMOUNT) 
+                        AS AMOUNT FROM 
+                        TRANSACTIONS LEFT JOIN PRODUCTS ON PRODUCT_ID = PRODUCTS.ID WHERE USER_ID = ? 
+                        GROUP BY TRANSACTIONS.TYPE, PRODUCT_TYPE """,
                 (rs, rowNum)->new Transaction(
                         rs.getInt("AMOUNT"),
                         rs.getString("TRANSACTION_TYPE"),
