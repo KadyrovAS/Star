@@ -1,11 +1,10 @@
-package star.config;
+package config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -14,7 +13,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import javax.sql.DataSource;
 
 @Configuration
-    public class DataSourceConfiguration {
+    public class DataSourceConfiguration{
 
     @Bean(name = "rulesDataSource")
     public DataSource rulesDataSource(@Value("${application.rules.url}") String rulesUrl){
