@@ -1,0 +1,144 @@
+@startuml
+class DataSourceConfiguration{
++{constructor} DataSourceConfiguration()
++transactionsDataSource(String transactionsUrl): DataSource
++transactionsJdbcTemplate(DataSource dataSource): JdbcTemplate
++rulesDataSourceInitializer(DataSource dataSource): DataSourceInitializer
++rulesDataSource(String rulesUrl): DataSource
++rulesJdbcTemplate(DataSource dataSource): JdbcTemplate
+}
+
+class RecommendationController{
+-service: RecommendationService
+-logger: Logger
++{constructor} RecommendationController(RecommendationService service)
++getRecommendation(UUID id): ResponseEntity<Recommendations>
+}
+
+class RecommendationExamplesController{
+-service: RecommendationExampleService
++{constructor} RecommendationExamplesController(RecommendationExampleService service)
++insertExampleRecords(): ResponseEntity<String>
+}
+
+class Recommendation{
+-id: UUID
+-name: String
+-annotation: String
++{constructor} Recommendation(UUID id, String name, String annotation)
++getName(): String
++toString(): String
++getAnnotation(): String
++getId(): UUID
+}
+
+class Recommendations{
+-user_id: UUID
+-recommendations: Recommendation[]
++{constructor} Recommendations(UUID userId, Recommendation[] recommendations)
++{constructor} Recommendations(UUID userId, List recommendations)
++getRecommendations(): Recommendation[]
++getUser_id(): UUID
+}
+
+class Rule{
+-id: UUID
+-instruction: String
+-annotation: String
++{constructor} Rule(UUID id, String instruction, String annotation)
++toString(): String
++getAnnotation(): String
++getId(): UUID
++getInstruction(): String
++setId(UUID id): void
+}
+
+class RuleToRecommendation{
+-recommendationId: UUID
+-ruleId: UUID
++{constructor} RuleToRecommendation(UUID recommendationId, UUID ruleId)
++toString(): String
++getRecommendationId(): UUID
++getRuleId(): UUID
+}
+
+class Transaction{
+-amount: int
+-transactionType: String
+-productType: String
++{constructor} Transaction(int amount, String transactionType, String productType)
++toString(): String
++transactionTypeEquals(String type): boolean
++getProductType(): String
++getAmount(): int
++getTransactionType(): String
+}
+
+class RecommendationExampleRepository{
+-jdbcTemplate: JdbcTemplate
+-logger: Logger
++{constructor} RecommendationExampleRepository(JdbcTemplate jdbcTemplate)
++addRecommendationRules(RuleToRecommendation ruleToRecommendation): void
++addRecommendationExample(String sqlLine): void
++deleteAll(): void
++addRule(Rule rule): void
++addRecommendation(Recommendation recommendation): void
+}
+
+class StarRepository{
+-transactionsJdbcTemplate: JdbcTemplate
+-rulesJdbcTemplate: JdbcTemplate
+-logger: Logger
++{constructor} StarRepository(JdbcTemplate transactionsJdbcTemplate, JdbcTemplate rulesJdbcTemplate)
++getRecommendations(): List<Recommendation>
+-lambda$getAllRules$1(ResultSet arg0, int arg1): Rule
+-lambda$getAmountsByTypes$0(ResultSet arg0, int arg1): Transaction
+-lambda$getRecommendations$3(ResultSet arg0, int arg1): Recommendation
+-lambda$getRulesById$2(ResultSet arg0, int arg1): UUID
++getAmountsByTypes(UUID id): List<Transaction>
++getAllRules(): List<Rule>
++getRulesById(UUID id): List<UUID>
+}
+
+class RecommendationExampleService{
+-repository: RecommendationExampleRepository
+-logger: Logger
++{constructor} RecommendationExampleService(RecommendationExampleRepository repository)
++addExample(): void
++addRules(): void
++addRecommendation(): void
+}
+
+class RecommendationRuleSet{
++getRecommendation(UUID id): Optional<Recommendations>
+}
+
+class RecommendationsChoice{
+-repository: StarRepository
+-transactions: List<Transaction>
+-keyWords: String[]
+-logger: Logger
++{constructor} RecommendationsChoice(StarRepository repository)
++toString(): String
++getRecommendation(UUID id): Optional<Recommendations>
+-toCompare(String evaluate): boolean
+-toTranslate(String rule): String
+-checkCondition(String evaluate1, String evaluate2, String operation): String
+-toSimplify(String text): String
+-toCalculate(String rule): int
++toEvaluate(String rule): boolean
+}
+
+class RecommendationService{
+-logger: Logger
+-recommendationRuleSet: RecommendationRuleSet
++{constructor} RecommendationService(RecommendationRuleSet recommendationRuleSet)
++getRecommendations(UUID id): Optional<Recommendations>
+}
+
+class StarApplication{
++{constructor} StarApplication()
++main(String[] args): void
+}
+
+@enduml
