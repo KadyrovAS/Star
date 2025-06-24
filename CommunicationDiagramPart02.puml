@@ -1,0 +1,107 @@
+@startuml
+
+class RecommendationControllerPart02{
+-service: RecommendationRuleSet
+-logger: Logger
++{constructor} RecommendationControllerPart02(RecommendationRuleSet service)
++deleteRecommendation(UUID id): void
++findRecommendationById(UUID id): ResponseEntity<Recommendation>>
++findAllTransactionsById(UUID id): List<Transaction>
++findAllRecommendations(): List<Recommendation>
++insertRecommendation(Recommendation recommendation): void
+}
+
+class Recommendation{
+-id: UUID
+-name: String
+-text: String
+-rules: Rule[]
++{constructor} Recommendation(UUID id, String name, String text, Rule[] rules)
++getName(): String
++toString(): String
++getId(): UUID
++getRules(): Rule[]
++getText(): String
+}
+
+class Rule{
+-query: String
+-arguments: String[]
+-negative: boolean
++{constructor} Rule(String query, String[] arguments, boolean negative)
++getArguments(): String[]
++toString(): String
++getQuery(): String
++isNegative(): boolean
+}
+
+class Transaction{
+-amount: int
+-count: int
+-transactionType: String
+-productType: String
++{constructor} Transaction(int amount, int count, String transactionType, String productType)
++getProductType(): String
++getTransactionType(): String
++getAmount(): int
++transactionTypeEquals(String type): boolean
++toString(): String
++getCount(): int
+}
+
+class StarRepositoryPart02{
+-transactionsJdbcTemplate: JdbcTemplate
+-rulesJdbcTemplate: JdbcTemplate
+-logger: Logger
++{constructor} StarRepositoryPart02(JdbcTemplate transactionsJdbcTemplate, JdbcTemplate rulesJdbcTemplate)
++deleteAll(): void
++getAllRules(): List<UUID>
++getAmountsByTypes(UUID id): List<Transaction>
+-deleteRule(UUID id): void
+-insertRule(Rule rule, UUID id): void
+-mapRowToRule(ResultSet rs, int rowNum): Rule
++findRuleById(UUID id): Rule
++deleteRecommendation(UUID id): void
+-lambda$getAmountsByTypes$4(ResultSet arg0, int arg1): Transaction
+-findRecommendationById(UUID id): Recommendation
+-lambda$deleteRecommendation$3(ResultSet arg0, int arg1): UUID
+-lambda$getAllRules$5(ResultSet arg0, int arg1): UUID
++findAllRecommendations(): List<Recommendation>
+-lambda$findRecommendationById$2(Rule[] arg0, ResultSet arg1, int arg2): Recommendation
+-lambda$findRecommendationById$1(ResultSet arg0, int arg1): UUID
+-lambda$findAllRecommendations$0(ResultSet arg0, int arg1): UUID
++insertRecommendation(Recommendation recommendation): void
+}
+
+class RecommendationRuleSet{
++addRecommendation(Recommendation recommendation): void
++deleteRecommendation(UUID id): void
++findRecommendationById(UUID id): Optional<Recommendation>>
++getTransactionsByUserId(UUID id): List<Transaction>
++findAllRecommendations(): List<Recommendation>
+}
+
+class RecommendationService{
+-repository: StarRepositoryPart02
+-logger: Logger
++{constructor} RecommendationService(StarRepositoryPart02 repository)
+-transactionSumCompareDepositWithdraw(Rule rule, List transactions): boolean
++addRecommendation(Recommendation recommendation): void
+-activeUserOf(Rule rule, List transactions): boolean
+-checkRule(Rule rule, List transactions): boolean
+-checkUserOf(Rule rule, List transactions): boolean
++deleteRecommendation(UUID id): void
++findRecommendationById(UUID id): Optional<Recommendation>>
++getTransactionsByUserId(UUID id): List<Transaction>
++findAllRecommendations(): List<Recommendation>
+-transactionSumCompare(Rule rule, List transactions): boolean
+-compare(int arg1, int arg2, String comp): boolean
+}
+
+RecommendationControllerPart02 --> RecommendationRuleSet: findRecommendationById(UUID id)
+Recommendation "1" *-- "0..*" Rule : contains
+RecommendationRuleSet --> StarRepositoryPart02 : repository
+StarRepositoryPart02 --> Recommendation: getRecommendations()
+StarRepositoryPart02 --> Transaction: getAmountsByTypes(UUID id)
+RecommendationService ..|> RecommendationRuleSet
+@enduml
