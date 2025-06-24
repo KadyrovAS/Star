@@ -1,4 +1,4 @@
-package part02;
+package star.part02;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
