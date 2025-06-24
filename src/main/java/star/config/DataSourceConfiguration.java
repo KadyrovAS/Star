@@ -1,6 +1,8 @@
 package star.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.DeleteMyCommands;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,4 +109,15 @@ public class DataSourceConfiguration {
                 .recordStats());
         return cacheManager;
     }
+
+    @Value("${telegram.bot.token}")
+    private String token;
+
+    @Bean
+    public TelegramBot telegramBot() {
+        TelegramBot bot = new TelegramBot(token);
+        bot.execute(new DeleteMyCommands());
+        return bot;
+    }
+
 }
