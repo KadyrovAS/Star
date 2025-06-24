@@ -1,0 +1,133 @@
+package star.part02.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import star.part02.model.Recommendation;
+import star.part02.model.Rule;
+import star.part02.model.Transaction;
+import star.part02.repository.StarRepositoryPart02;
+
+import java.util.*;
+
+@Component("servicePart02")
+public class RecommendationService implements RecommendationRuleSet{
+    private final StarRepositoryPart02 repository;
+    private static final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
+    public RecommendationService(StarRepositoryPart02 repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public Optional<List<Recommendation>> findRecommendationById(UUID id) {
+        List<Transaction>transactions = repository.getAmountsByTypes(id);
+        Map<UUID, Recommendation>resultRecommendations = new HashMap<>();
+
+        boolean isRecommend;
+        for (Recommendation recommendation: repository.findAllRecommendations()){
+            isRecommend = true;
+            for (Rule rule: recommendation.getRules()) {
+                if (!checkRule(rule, transactions)) {
+                    isRecommend = false;
+                    break;
+                }
+            }
+            if (isRecommend){
+                resultRecommendations.put(recommendation.getId(), recommendation);
+            }
+        }
+
+        return Optional.of(resultRecommendations.values().stream().toList());
+    }
+
+    @Override
+    public void addRecommendation(Recommendation recommendation) {
+        repository.insertRecommendation(recommendation);
+    }
+
+    @Override
+    public void deleteRecommendation(UUID contractId) {
+        repository.deleteRecommendation(contractId);
+    }
+
+    @Override
+    public List<Recommendation> findAllRecommendations() {
+        return repository.findAllRecommendations();
+    }
+
+    private boolean checkRule(Rule rule, List<Transaction> transactions){
+        return switch (rule.getQuery()) {
+            case "USER_OF" -> checkUserOf(rule, transactions);
+            case "ACTIVE_USER_OF" -> activeUserOf(rule, transactions);
+            case "TRANSACTION_SUM_COMPARE" -> transactionSumCompare(rule, transactions);
+            case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW" -> transactionSumCompareDepositWithdraw(rule, transactions);
+            default -> false;
+        };
+    }
+
+    private boolean checkUserOf(Rule rule, List<Transaction>transactions){
+        for (Transaction transaction: transactions){
+            if (transaction.getProductType().equals(rule.getArguments()[0])) {
+                return !rule.isNegative();
+            }
+        }
+        return rule.isNegative();
+    }
+
+    private boolean activeUserOf(Rule rule, List<Transaction>transactions){
+        String productType = rule.getArguments()[0];
+        for (Transaction transaction: transactions){
+            if (transaction.getProductType().equals(productType)){
+                return transaction.getCount() > 5 && !rule.isNegative();
+            }
+        }
+        return false;
+    }
+
+    private boolean transactionSumCompare(Rule rule, List<Transaction> transactions){
+        String productType = rule.getArguments()[0];
+        String transactionType = rule.getArguments()[1];
+        String comp = rule.getArguments()[2];
+        int arg = Integer.parseInt(rule.getArguments()[3]);
+
+        int sum = 0;
+        for (Transaction transaction: transactions){
+            if (transaction.getProductType().equals(productType) &&
+            transaction.getTransactionType().equals(transactionType)){
+                sum += transaction.getAmount();
+            }
+        }
+        return compare(sum, arg, comp) && !rule.isNegative();
+    }
+
+    private boolean transactionSumCompareDepositWithdraw(Rule rule, List<Transaction> transactions){
+        int sum = 0;
+        String productType = rule.getArguments()[0];
+        String comp = rule.getArguments()[1];
+
+        for (Transaction transaction: transactions){
+            if(transaction.getProductType().equals(productType)) {
+                if (transaction.getTransactionType().equals("DEPOSIT")){
+                    sum += transaction.getAmount();
+                }else {
+                    sum -= transaction.getAmount();
+                }
+            }
+        }
+
+        return compare(sum, 0, comp) && !rule.isNegative();
+    }
+
+    private boolean compare(int arg1, int arg2, String comp){
+        if (arg1 > arg2 && comp.equals(">")){
+            return true;
+        } else if (arg1 < arg2 && comp.equals("<")) {
+            return true;
+        } else if (arg1 == arg2 && comp.equals("=")) {
+            return true;
+        } else if (arg1 >= arg2 && comp.equals(">=")){
+            return true;
+        } else return arg1 <= arg2 && comp.equals("<=");
+    }
+
+}

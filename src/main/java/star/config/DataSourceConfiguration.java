@@ -27,6 +27,19 @@ public class DataSourceConfiguration {
         return dataSource;
     }
 
+    @Bean(name = "rulesDataSourcePart02")
+    public DataSource rulesDataSourcePart02(
+            @Value("${application.rules.part02.url}") String url,
+            @Value("${application.rules.part02.username}") String username,
+            @Value("${application.rules.part02.password}") String password
+    ) {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        return dataSource;
+    }
 
     @Bean
     public DataSourceInitializer rulesDataSourceInitializerPart01(
@@ -41,6 +54,18 @@ public class DataSourceConfiguration {
         return initializer;
     }
 
+    @Bean
+    public DataSourceInitializer rulesDataSourceInitializerPart02(
+            @Qualifier("rulesDataSourcePart02") DataSource dataSource) {
+        DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setDataSource(dataSource);
+
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("liquibase/scripts/schema-init_part02.sql"));
+
+        initializer.setDatabasePopulator(populator);
+        return initializer;
+    }
 
     @Bean(name = "transactionsDataSource")
     public DataSource transactionsDataSource(@Value("${application.transactions-db.url}") String transactionsUrl) {
@@ -65,4 +90,21 @@ public class DataSourceConfiguration {
         return new JdbcTemplate(dataSource);
     }
 
+    @Bean(name = "rulesJdbcTemplatePart02")
+    public JdbcTemplate rulesJdbcTemplatePart02(
+            @Qualifier("rulesDataSourcePart02") DataSource dataSource
+    ){
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                .initialCapacity(100)
+                .maximumSize(500)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .recordStats());
+        return cacheManager;
+    }
 }
