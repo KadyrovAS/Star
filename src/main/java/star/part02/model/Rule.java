@@ -4,9 +4,7 @@ import java.util.Arrays;
 
 public class Rule{
     private String query;
-
     private String[] arguments;
-
     private boolean negative;
 
     public Rule(String query, String[] arguments, boolean negative) {
