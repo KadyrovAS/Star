@@ -1,8 +1,8 @@
 package star.part03.model;
 
 public class InformationAboutPackage{
-    private String name;
-    private String version;
+    private final String name;
+    private final String version;
 
     public InformationAboutPackage(String name, String version) {
         this.name = name;
