@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import star.StarApplication;
 import star.part02.service.RecommendationRuleSet;
 import star.part03.model.InformationAboutPackage;
 import star.part03.model.Stat;
@@ -61,7 +62,7 @@ public class RecommendationControllerPart03 {
             description = "Получена информация о сервисе"
     )
     public InformationAboutPackage aboutService(){
-        Package pkg = RecommendationControllerPart03.class.getPackage();
+        Package pkg = getClass().getPackage();
         return new InformationAboutPackage(
                 pkg.getImplementationTitle(),
                 pkg.getImplementationVersion()
