@@ -16,4 +16,5 @@ public interface RecommendationRuleSet {
     List<Recommendation>findAllRecommendations();
     List<UUID>findUserIdByName(String firstName, String lastName);
     Optional<List<Stat>>findStat();
+    void toClearCaches();
 }

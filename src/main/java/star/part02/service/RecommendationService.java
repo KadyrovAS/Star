@@ -149,4 +149,9 @@ public class RecommendationService implements RecommendationRuleSet {
     public Optional<List<Stat>> findStat() {
         return repository.getStat();
     }
+
+    @Override
+    public void toClearCaches() {
+        repository.clearRecommendationCache();
+    }
 }

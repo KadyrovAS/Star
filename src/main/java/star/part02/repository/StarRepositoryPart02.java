@@ -3,6 +3,7 @@ package star.part02.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +12,7 @@ import star.part02.model.Transaction;
 import star.part02.model.Recommendation;
 import star.part02.model.Rule;
 import star.part02.service.RuleMapper;
+import star.part03.model.SQLCreator;
 import star.part03.model.Stat;
 
 import java.util.*;
@@ -22,54 +24,9 @@ public class StarRepositoryPart02{
     private final RuleMapper ruleMapper;
     private static final Logger logger = LoggerFactory.getLogger(StarRepositoryPart02.class);
 
-    private static final String SELECT_FROM_RULE = "SELECT * FROM RULE WHERE ID = ?";
-    private static final String INSERT_INTO_RULE = "INSERT INTO RULE " +
-            "(ID, QUERY, ARGUMENT01, ARGUMENT02, ARGUMENT03, ARGUMENT04, NEGATIVE) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SELECT_ID_FROM_RECOMMENDATION = "SELECT ID FROM RECOMMENDATION";
-    private static final String SELECT_RULE_ID =
-            "SELECT RULE_ID FROM RULE_TO_RECOMMENDATION WHERE RECOMMENDATION_ID = ?";
-    private static final String SELECT_ALL_FROM_RECOMMENDATION =
-            "SELECT * FROM RECOMMENDATION WHERE ID = ?";
-    private static final String INSERT_INTO_RECOMMENDATION = "INSERT INTO RECOMMENDATION " +
-            "(ID, CONTRACT_ID, NAME, TEXT) " +
-            "VALUES (?, ?, ?, ?)";
-    private static final String INSERT_INTO_RULE_TO_RECOMMENDATION =
-            "INSERT INTO RULE_TO_RECOMMENDATION " +
-            "(RECOMMENDATION_ID, RULE_ID) " +
-            "VALUES (?, ?)";
-    private static final String DELETE_FROM_RULE = "DELETE FROM RULE WHERE ID = ?";
-    private static final String SELECT_FROM_RECOMMENDATION_BY_CONTRACT_ID =
-            "SELECT * FROM RECOMMENDATION WHERE CONTRACT_ID = ?";
-    private static final String SELECT_ALL_FROM_RULE_TO_RECOMMENDATION =
-            "SELECT * FROM RULE_TO_RECOMMENDATION WHERE RECOMMENDATION_ID = ?";
-    private static final String DELETE_FROM_RULE_TO_RECOMMENDATION =
-            "DELETE FROM RULE_TO_RECOMMENDATION WHERE RECOMMENDATION_ID = ?";
-    private static final String DELETE_FROM_RECOMMENDATION =
-            "DELETE FROM RECOMMENDATION WHERE CONTRACT_ID = ?";
-    private static final String SELECT_FROM_TRANSACTIONS =
-            """
-            SELECT PRODUCTS.TYPE AS PRODUCT_TYPE, TRANSACTIONS.TYPE AS TRANSACTION_TYPE, 
-            SUM(AMOUNT) AS AMOUNT, COUNT(AMOUNT) AS COUNT FROM 
-            TRANSACTIONS LEFT JOIN PRODUCTS ON PRODUCT_ID = PRODUCTS.ID WHERE USER_ID = ? 
-            GROUP BY TRANSACTIONS.TYPE, PRODUCT_TYPE""";
-    private static final String DELETE_ALL_FROM_RECOMMENDATION = "DELETE FROM RECOMMENDATION";
-    private static final String DELETE_ALL_FROM_RULE = "DELETE FROM RULE";
-    private static final String DELETE_ALL_FROM_RULE_TO_RECOMMENDATION =
-            "DELETE FROM RULE_TO_RECOMMENDATION";
-    private static final  String SELECT_ID_FROM_USERS_BY_NAME =
-            "SELECT ID FROM USERS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
-
-    private static final String SELECT_FROM_RULE_STATISTICS_BY_ID =
-            "SELECT * FROM RULE_STATISTICS WHERE RULE_NAME = ?";
-    private static final String UPDATE_RULE_STATISTICS =
-            "UPDATE RULE_STATISTICS SET COUNT = ? WHERE RULE_NAME = ?";
-    private static final String INSERT_INTO_RULE_STATISTICS =
-            "INSERT INTO RULE_STATISTICS (RULE_NAME, COUNT) VALUES (?, ?)";
-    private static final String SELECT_ALL_RECORDS_FROM_RULE_STATISTICS =
-            "SELECT * FROM RULE_STATISTICS";
     public StarRepositoryPart02(@Qualifier("transactionsJdbcTemplate") JdbcTemplate transactionsJdbcTemplate,
-                                @Qualifier("rulesJdbcTemplatePart02") JdbcTemplate rulesJdbcTemplate, RuleMapper ruleMapper) {
+                                @Qualifier("rulesJdbcTemplatePart02") JdbcTemplate rulesJdbcTemplate,
+                                RuleMapper ruleMapper) {
         this.transactionsJdbcTemplate = transactionsJdbcTemplate;
         this.rulesJdbcTemplate = rulesJdbcTemplate;
         this.ruleMapper = ruleMapper;
@@ -79,7 +36,7 @@ public class StarRepositoryPart02{
     public Rule findRuleById(UUID id) {
         try {
             return rulesJdbcTemplate.queryForObject(
-                    SELECT_FROM_RULE,
+                    SQLCreator.SELECT_FROM_RULE,
                     (rs, rowNum)->ruleMapper.getRule(rs),
                     id.toString()
             );
@@ -105,7 +62,7 @@ public class StarRepositoryPart02{
         }
 
         rulesJdbcTemplate.update(
-                INSERT_INTO_RULE,
+                SQLCreator.INSERT_INTO_RULE,
                 id.toString(),
                 rule.getQuery(),
                 argument01.orElse(""),
@@ -119,7 +76,7 @@ public class StarRepositoryPart02{
     public List<Recommendation> findAllRecommendations() {
         List<UUID> recommendationsId =
                 rulesJdbcTemplate.query(
-                        SELECT_ID_FROM_RECOMMENDATION,
+                        SQLCreator.SELECT_ID_FROM_RECOMMENDATION,
                         (rs, rowNum) -> UUID.fromString(rs.getString("ID"))
                 );
 
@@ -131,11 +88,16 @@ public class StarRepositoryPart02{
         return recommendations;
     }
 
+    @CacheEvict(value = "recommendation", allEntries = true)
+    public void clearRecommendationCache() {
+        logger.info("Clearing all cached recommendations");
+    }
+
     @Cacheable(value = "recommendation", key = "#id")
     private Recommendation findRecommendationById(UUID id) {
 
         List<UUID> rulesId = rulesJdbcTemplate.query(
-                SELECT_RULE_ID,
+                SQLCreator.SELECT_RULE_ID,
                 (rs, rowNum) -> UUID.fromString(rs.getString("RULE_ID")),
                 id.toString()
         );
@@ -151,7 +113,7 @@ public class StarRepositoryPart02{
         }
 
         return rulesJdbcTemplate.queryForObject(
-                SELECT_ALL_FROM_RECOMMENDATION,
+                SQLCreator.SELECT_ALL_FROM_RECOMMENDATION,
                 (rs, rowNum) -> new Recommendation(
                         UUID.fromString(rs.getString("CONTRACT_ID")),
                         rs.getString("NAME"),
@@ -167,7 +129,7 @@ public class StarRepositoryPart02{
         UUID id = UUID.randomUUID();
 
         rulesJdbcTemplate.update(
-                INSERT_INTO_RECOMMENDATION,
+                SQLCreator.INSERT_INTO_RECOMMENDATION,
                 id.toString(),
                 recommendation.getId().toString(),
                 recommendation.getName(),
@@ -177,7 +139,7 @@ public class StarRepositoryPart02{
         for (Rule rule : recommendation.getRules()) {
             ruleId = UUID.randomUUID();
             rulesJdbcTemplate.update(
-                    INSERT_INTO_RULE_TO_RECOMMENDATION,
+                    SQLCreator.INSERT_INTO_RULE_TO_RECOMMENDATION,
                     id.toString(),
                     ruleId.toString()
             );
@@ -186,30 +148,30 @@ public class StarRepositoryPart02{
     }
 
     private void deleteRule(UUID id) {
-        rulesJdbcTemplate.update(DELETE_FROM_RULE, id.toString());
+        rulesJdbcTemplate.update(SQLCreator.DELETE_FROM_RULE, id.toString());
     }
 
     public void deleteRecommendation(UUID contractId) {
         logger.info("deleteRecommendation: contractId = '{}'", contractId);
         List<UUID> listId = rulesJdbcTemplate.query(
-                SELECT_FROM_RECOMMENDATION_BY_CONTRACT_ID,
+                SQLCreator.SELECT_FROM_RECOMMENDATION_BY_CONTRACT_ID,
                 (rs, rowNum) -> UUID.fromString(rs.getString("ID")),
                 contractId.toString()
         );
         for (UUID id : listId) {
             List<UUID> rulesId = rulesJdbcTemplate.query(
-                    SELECT_ALL_FROM_RULE_TO_RECOMMENDATION,
+                    SQLCreator.SELECT_ALL_FROM_RULE_TO_RECOMMENDATION,
                     (rs, rowNum) -> UUID.fromString(rs.getString("RULE_ID")),
                     id.toString()
             );
 
-            rulesJdbcTemplate.update(DELETE_FROM_RULE_TO_RECOMMENDATION, id);
+            rulesJdbcTemplate.update(SQLCreator.DELETE_FROM_RULE_TO_RECOMMENDATION, id);
 
             for (UUID ruleId : rulesId) {
                 deleteRule(ruleId);
             }
         }
-        rulesJdbcTemplate.update(DELETE_FROM_RECOMMENDATION, contractId);
+        rulesJdbcTemplate.update(SQLCreator.DELETE_FROM_RECOMMENDATION, contractId);
     }
 
     private record RecommendationRecord(String name, String text, String query){
@@ -220,7 +182,7 @@ public class StarRepositoryPart02{
     public List<Transaction> getAmountsByTypes(UUID id) {
 
         return transactionsJdbcTemplate.query(
-                SELECT_FROM_TRANSACTIONS,
+                SQLCreator.SELECT_FROM_TRANSACTIONS,
                 (rs, rowNum) -> new Transaction(
                         rs.getInt("AMOUNT"),
                         rs.getInt("COUNT"),
@@ -232,14 +194,14 @@ public class StarRepositoryPart02{
     }
 
     public void deleteAll() {
-        rulesJdbcTemplate.update(DELETE_ALL_FROM_RECOMMENDATION);
-        rulesJdbcTemplate.update(DELETE_ALL_FROM_RULE);
-        rulesJdbcTemplate.update(DELETE_ALL_FROM_RULE_TO_RECOMMENDATION);
+        rulesJdbcTemplate.update(SQLCreator.DELETE_ALL_FROM_RECOMMENDATION);
+        rulesJdbcTemplate.update(SQLCreator.DELETE_ALL_FROM_RULE);
+        rulesJdbcTemplate.update(SQLCreator.DELETE_ALL_FROM_RULE_TO_RECOMMENDATION);
     }
 
     public List<UUID> findUUIDByName(String firstName, String lastName){
         return transactionsJdbcTemplate.query(
-                SELECT_ID_FROM_USERS_BY_NAME,
+                SQLCreator.SELECT_ID_FROM_USERS_BY_NAME,
                 (rs, rowNum)->UUID.fromString(rs.getString("ID")),
                 firstName,
                 lastName
@@ -248,20 +210,20 @@ public class StarRepositoryPart02{
 
     public void updateRuleStatistic(String ruleName){
         List<Integer>results = rulesJdbcTemplate.query(
-                SELECT_FROM_RULE_STATISTICS_BY_ID,
+                SQLCreator.SELECT_FROM_RULE_STATISTICS_BY_ID,
                 (rs, rowNum)-> rs.getInt("COUNT"),
                 ruleName
         );
         if (results.size() == 1){
             int count = results.get(0) + 1;
             rulesJdbcTemplate.update(
-                    UPDATE_RULE_STATISTICS,
+                    SQLCreator.UPDATE_RULE_STATISTICS,
                     count,
                     ruleName
             );
         }else{
             rulesJdbcTemplate.update(
-                    INSERT_INTO_RULE_STATISTICS,
+                    SQLCreator.INSERT_INTO_RULE_STATISTICS,
                     ruleName,
                     1
             );
@@ -270,7 +232,7 @@ public class StarRepositoryPart02{
 
    public Optional<List<Stat>>getStat(){
         List<Stat>stats = rulesJdbcTemplate.query(
-                SELECT_ALL_RECORDS_FROM_RULE_STATISTICS,
+                SQLCreator.SELECT_ALL_RECORDS_FROM_RULE_STATISTICS,
                 (rs, rowNum)->new Stat(
                         rs.getString("RULE_NAME"),
                         rs.getInt("COUNT")

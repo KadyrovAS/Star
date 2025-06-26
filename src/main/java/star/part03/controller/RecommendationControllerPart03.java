@@ -7,16 +7,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import star.part02.model.Recommendation;
 import star.part02.service.RecommendationRuleSet;
+import star.part03.model.InformationAboutPackage;
 import star.part03.model.Stat;
+import java.lang.Package;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/rule")
 public class RecommendationControllerPart03 {
     private final RecommendationRuleSet service;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationControllerPart03.class);
@@ -25,7 +25,7 @@ public class RecommendationControllerPart03 {
         this.service = service;
     }
 
-    @GetMapping(value = "/stats")
+    @GetMapping(value = "/rule/stats")
     @Operation(
             summary = "Получить статистику выполнения правил",
             description = "Возвращает статистику выполнения правил"
@@ -38,5 +38,33 @@ public class RecommendationControllerPart03 {
         return ResponseEntity.ok(service.findStat().orElse(Collections.emptyList()));
     }
 
+    @GetMapping(value = "/management/clear-caches")
+    @Operation(
+            summary = "Очистить кэш запросов рекомендаций",
+            description = "Очищает кэш запросов рекомендаций"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Кэш запросов рекомендаций очищен"
+    )
+    public void clearCaches() {
+        service.toClearCaches();
+    }
 
+    @GetMapping(value = "/management/info")
+    @Operation(
+            summary = "Получить информацию о сервисе",
+            description = "Получает информацию о сервисе"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Получена информация о сервисе"
+    )
+    public InformationAboutPackage aboutService(){
+        Package pkg = RecommendationControllerPart03.class.getPackage();
+        return new InformationAboutPackage(
+                pkg.getImplementationTitle(),
+                pkg.getImplementationVersion()
+        );
+    }
 }
