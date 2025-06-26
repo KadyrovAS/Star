@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import star.StarApplication;
 import star.part02.service.RecommendationRuleSet;
 import star.part03.model.InformationAboutPackage;
 import star.part03.model.Stat;
@@ -15,15 +16,17 @@ import java.lang.Package;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class RecommendationControllerPart03 {
     private final RecommendationRuleSet service;
+    private final BuildProperties buildProperties;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationControllerPart03.class);
 
-    public RecommendationControllerPart03(@Qualifier("servicePart02") RecommendationRuleSet service) {
+    public RecommendationControllerPart03(@Qualifier("servicePart02") RecommendationRuleSet service,
+                                          @Autowired BuildProperties buildProperties) {
         this.service = service;
+        this.buildProperties = buildProperties;
     }
 
     @GetMapping(value = "/rule/stats")
@@ -64,8 +67,8 @@ public class RecommendationControllerPart03 {
     public InformationAboutPackage aboutService(){
         Package pkg = getClass().getPackage();
         return new InformationAboutPackage(
-                pkg.getImplementationTitle(),
-                pkg.getImplementationVersion()
+               buildProperties.getName(),
+                buildProperties.getVersion()
         );
     }
 }
