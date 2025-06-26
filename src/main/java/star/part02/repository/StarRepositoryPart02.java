@@ -11,9 +11,8 @@ import star.part02.model.Transaction;
 import star.part02.model.Recommendation;
 import star.part02.model.Rule;
 import star.part02.service.RuleMapper;
+import star.part03.model.Stat;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Repository
@@ -58,7 +57,17 @@ public class StarRepositoryPart02{
     private static final String DELETE_ALL_FROM_RULE = "DELETE FROM RULE";
     private static final String DELETE_ALL_FROM_RULE_TO_RECOMMENDATION =
             "DELETE FROM RULE_TO_RECOMMENDATION";
+    private static final  String SELECT_ID_FROM_USERS_BY_NAME =
+            "SELECT ID FROM USERS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
 
+    private static final String SELECT_FROM_RULE_STATISTICS_BY_ID =
+            "SELECT * FROM RULE_STATISTICS WHERE RULE_NAME = ?";
+    private static final String UPDATE_RULE_STATISTICS =
+            "UPDATE RULE_STATISTICS SET COUNT = ? WHERE RULE_NAME = ?";
+    private static final String INSERT_INTO_RULE_STATISTICS =
+            "INSERT INTO RULE_STATISTICS (RULE_NAME, COUNT) VALUES (?, ?)";
+    private static final String SELECT_ALL_RECORDS_FROM_RULE_STATISTICS =
+            "SELECT * FROM RULE_STATISTICS";
     public StarRepositoryPart02(@Qualifier("transactionsJdbcTemplate") JdbcTemplate transactionsJdbcTemplate,
                                 @Qualifier("rulesJdbcTemplatePart02") JdbcTemplate rulesJdbcTemplate, RuleMapper ruleMapper) {
         this.transactionsJdbcTemplate = transactionsJdbcTemplate;
@@ -228,4 +237,45 @@ public class StarRepositoryPart02{
         rulesJdbcTemplate.update(DELETE_ALL_FROM_RULE_TO_RECOMMENDATION);
     }
 
+    public List<UUID> findUUIDByName(String firstName, String lastName){
+        return transactionsJdbcTemplate.query(
+                SELECT_ID_FROM_USERS_BY_NAME,
+                (rs, rowNum)->UUID.fromString(rs.getString("ID")),
+                firstName,
+                lastName
+        );
+    }
+
+    public void updateRuleStatistic(String ruleName){
+        List<Integer>results = rulesJdbcTemplate.query(
+                SELECT_FROM_RULE_STATISTICS_BY_ID,
+                (rs, rowNum)-> rs.getInt("COUNT"),
+                ruleName
+        );
+        if (results.size() == 1){
+            int count = results.get(0) + 1;
+            rulesJdbcTemplate.update(
+                    UPDATE_RULE_STATISTICS,
+                    count,
+                    ruleName
+            );
+        }else{
+            rulesJdbcTemplate.update(
+                    INSERT_INTO_RULE_STATISTICS,
+                    ruleName,
+                    1
+            );
+        }
+    }
+
+   public Optional<List<Stat>>getStat(){
+        List<Stat>stats = rulesJdbcTemplate.query(
+                SELECT_ALL_RECORDS_FROM_RULE_STATISTICS,
+                (rs, rowNum)->new Stat(
+                        rs.getString("RULE_NAME"),
+                        rs.getInt("COUNT")
+                )
+        );
+        return Optional.of(stats);
+   }
 }

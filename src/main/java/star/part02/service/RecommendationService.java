@@ -5,34 +5,38 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import star.part02.model.Recommendation;
 import star.part02.model.Rule;
+import star.part02.model.RuleType;
 import star.part02.model.Transaction;
 import star.part02.repository.StarRepositoryPart02;
+import star.part03.model.Stat;
 
 import java.util.*;
 
 @Component("servicePart02")
-public class RecommendationService implements RecommendationRuleSet{
+public class RecommendationService implements RecommendationRuleSet {
     private final StarRepositoryPart02 repository;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
+
     public RecommendationService(StarRepositoryPart02 repository) {
         this.repository = repository;
     }
 
     @Override
     public Optional<List<Recommendation>> findRecommendationById(UUID id) {
-        List<Transaction>transactions = repository.getAmountsByTypes(id);
-        Map<UUID, Recommendation>resultRecommendations = new HashMap<>();
+        List<Transaction> transactions = repository.getAmountsByTypes(id);
+        Map<UUID, Recommendation> resultRecommendations = new HashMap<>();
 
         boolean isRecommend;
-        for (Recommendation recommendation: repository.findAllRecommendations()){
+        for (Recommendation recommendation : repository.findAllRecommendations()) {
             isRecommend = true;
-            for (Rule rule: recommendation.getRules()) {
+            for (Rule rule : recommendation.getRules()) {
                 if (!checkRule(rule, transactions)) {
                     isRecommend = false;
-                    break;
+                }else {
+                    repository.updateRuleStatistic(rule.getQuery());
                 }
             }
-            if (isRecommend){
+            if (isRecommend) {
                 resultRecommendations.put(recommendation.getId(), recommendation);
             }
         }
@@ -55,18 +59,24 @@ public class RecommendationService implements RecommendationRuleSet{
         return repository.findAllRecommendations();
     }
 
-    private boolean checkRule(Rule rule, List<Transaction> transactions){
-        return switch (rule.getQuery()) {
-            case "USER_OF" -> checkUserOf(rule, transactions);
-            case "ACTIVE_USER_OF" -> activeUserOf(rule, transactions);
-            case "TRANSACTION_SUM_COMPARE" -> transactionSumCompare(rule, transactions);
-            case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW" -> transactionSumCompareDepositWithdraw(rule, transactions);
-            default -> false;
-        };
+    private boolean checkRule(Rule rule, List<Transaction> transactions) {
+        try {
+            RuleType ruleType = RuleType.valueOf(rule.getQuery());
+            return switch (ruleType) {
+                case USER_OF -> checkUserOf(rule, transactions);
+                case ACTIVE_USER_OF -> activeUserOf(rule, transactions);
+                case TRANSACTION_SUM_COMPARE -> transactionSumCompare(rule, transactions);
+                case TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW ->
+                        transactionSumCompareDepositWithdraw(rule, transactions);
+            };
+        } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
     }
 
-    private boolean checkUserOf(Rule rule, List<Transaction>transactions){
-        for (Transaction transaction: transactions){
+    private boolean checkUserOf(Rule rule, List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
             if (transaction.getProductType().equals(rule.getArguments()[0])) {
                 return !rule.isNegative();
             }
@@ -74,42 +84,42 @@ public class RecommendationService implements RecommendationRuleSet{
         return rule.isNegative();
     }
 
-    private boolean activeUserOf(Rule rule, List<Transaction>transactions){
+    private boolean activeUserOf(Rule rule, List<Transaction> transactions) {
         String productType = rule.getArguments()[0];
-        for (Transaction transaction: transactions){
-            if (transaction.getProductType().equals(productType)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getProductType().equals(productType)) {
                 return transaction.getCount() > 5 && !rule.isNegative();
             }
         }
         return false;
     }
 
-    private boolean transactionSumCompare(Rule rule, List<Transaction> transactions){
+    private boolean transactionSumCompare(Rule rule, List<Transaction> transactions) {
         String productType = rule.getArguments()[0];
         String transactionType = rule.getArguments()[1];
         String comp = rule.getArguments()[2];
         int arg = Integer.parseInt(rule.getArguments()[3]);
 
         int sum = 0;
-        for (Transaction transaction: transactions){
+        for (Transaction transaction : transactions) {
             if (transaction.getProductType().equals(productType) &&
-            transaction.getTransactionType().equals(transactionType)){
+                    transaction.getTransactionType().equals(transactionType)) {
                 sum += transaction.getAmount();
             }
         }
         return compare(sum, arg, comp) && !rule.isNegative();
     }
 
-    private boolean transactionSumCompareDepositWithdraw(Rule rule, List<Transaction> transactions){
+    private boolean transactionSumCompareDepositWithdraw(Rule rule, List<Transaction> transactions) {
         int sum = 0;
         String productType = rule.getArguments()[0];
         String comp = rule.getArguments()[1];
 
-        for (Transaction transaction: transactions){
-            if(transaction.getProductType().equals(productType)) {
-                if (transaction.getTransactionType().equals("DEPOSIT")){
+        for (Transaction transaction : transactions) {
+            if (transaction.getProductType().equals(productType)) {
+                if (transaction.getTransactionType().equals("DEPOSIT")) {
                     sum += transaction.getAmount();
-                }else {
+                } else {
                     sum -= transaction.getAmount();
                 }
             }
@@ -118,16 +128,25 @@ public class RecommendationService implements RecommendationRuleSet{
         return compare(sum, 0, comp) && !rule.isNegative();
     }
 
-    private boolean compare(int arg1, int arg2, String comp){
-        if (arg1 > arg2 && comp.equals(">")){
+    private boolean compare(int arg1, int arg2, String comp) {
+        if (arg1 > arg2 && comp.equals(">")) {
             return true;
         } else if (arg1 < arg2 && comp.equals("<")) {
             return true;
         } else if (arg1 == arg2 && comp.equals("=")) {
             return true;
-        } else if (arg1 >= arg2 && comp.equals(">=")){
+        } else if (arg1 >= arg2 && comp.equals(">=")) {
             return true;
         } else return arg1 <= arg2 && comp.equals("<=");
     }
 
+    @Override
+    public List<UUID> findUserIdByName(String firstName, String lastName) {
+        return repository.findUUIDByName(firstName, lastName);
+    }
+
+    @Override
+    public Optional<List<Stat>> findStat() {
+        return repository.getStat();
+    }
 }
