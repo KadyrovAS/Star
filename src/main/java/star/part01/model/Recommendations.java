@@ -12,7 +12,11 @@ public class Recommendations{
 
     public Recommendations(UUID userId, Recommendation[] recommendations) {
         this.user_id = userId;
-        this.recommendations = recommendations;
+        if (recommendations == null){
+            this.recommendations = new Recommendation[0];
+        }else {
+            this.recommendations = recommendations;
+        }
     }
 
     @JsonCreator
@@ -20,7 +24,11 @@ public class Recommendations{
             @JsonProperty("user_id") UUID userId,
             @JsonProperty("recommendations") List<Recommendation> recommendations) {
         this.user_id = userId;
-        this.recommendations = recommendations.toArray(new Recommendation[recommendations.size()]);
+        if (recommendations == null){
+            this.recommendations = new Recommendation[0];
+        }else {
+            this.recommendations = recommendations.toArray(new Recommendation[recommendations.size()]);
+        }
     }
 
     @JsonProperty("user_id")

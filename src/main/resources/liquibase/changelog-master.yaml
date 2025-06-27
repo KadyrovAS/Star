@@ -1,3 +1,7 @@
-databaseChangeLog:
+  databaseChangeLog:
   - include:
-      file: liquibase/scripts/schema-init_part02.sql
+      file: scripts/schema-init_part02.sql
+      relativeToChangelogFile: true
+  - include:
+      file: scripts/schema-init_part03.sql
+      relativeToChangelogFile: true
