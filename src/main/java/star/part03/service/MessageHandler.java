@@ -28,7 +28,6 @@ public class MessageHandler {
 
     private void sendMessageToUser(Long id, String message){
         telegramBot.execute(new SendMessage(id, message));
-//        logger.info(message);
     }
 
     public void put(Update update) {
