@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Класс, содержащий массив рекомендаций для клиента с заданным id
+ * Разработан на первом этапе
+ */
 public class Recommendations{
     private final UUID user_id;
     private final Recommendation[] recommendations;

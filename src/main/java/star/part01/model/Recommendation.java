@@ -2,6 +2,9 @@ package star.part01.model;
 
 import java.util.UUID;
 
+/**
+ * Класс рекомендации, соответствующий первому этапу рабты
+ */
 public class Recommendation {
     private final UUID id;
     private final String name;

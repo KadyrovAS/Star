@@ -7,6 +7,7 @@ import java.lang.reflect.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -14,8 +15,27 @@ import java.util.stream.Stream;
 /**
  * Формирует puml файл для построения диаграммы
  */
-public class DiagramCreator {
+public class DiagramCreator{
+    static class RelationsClass{
+        private String className;
+        private List<String> relationClasses = new LinkedList<>();
+
+        public RelationsClass(String className) {
+            this.className = className;
+        }
+
+        public void setClassName(String className) {
+            this.className = className;
+        }
+
+        public List<String> getRelationClasses() {
+            return relationClasses;
+        }
+    }
+
+    private List<RelationsClass> relationsClass = new LinkedList<>();
     private final String pathString;
+    private List<String> exceptions = new ArrayList<>();
 
     public DiagramCreator(String path) {
         this.pathString = path;
@@ -37,6 +57,10 @@ public class DiagramCreator {
         return pathList;
     }
 
+    public void addException(String exception) {
+        this.exceptions.add(exception);
+    }
+
     public List<String> getClassString(Path path) throws ClassNotFoundException {
         String fileName = path.toString();
         String linePrepare;
@@ -45,27 +69,35 @@ public class DiagramCreator {
         ind = fileName.indexOf("star");
         fileName = fileName.substring(ind);
         List<String> result = new LinkedList<>();
+        for (String exception : exceptions) {
+            if (fileName.contains(exception)) {
+                return result;
+            }
+        }
 
         Class clazz;
         try {
             Class clazzz = Class.forName(fileName);
-        }catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             System.out.println(fileName);
             return result;
         }
 
         clazz = Class.forName(fileName);
 
-        if (clazz.getName().equals(this.getClass().getName())){
+        if (clazz.getName().equals(this.getClass().getName())) {
             return result;
         }
         result.add("class " + clazz.getSimpleName() + "{");
 
+        RelationsClass rel = new RelationsClass(clazz.getSimpleName());
         for (Field field : clazz.getDeclaredFields()) {
             linePrepare = getModify(field.getModifiers()) + field.getName() + ": " +
                     getReturnType(field.getGenericType());
             result.add(linePrepare);
+            rel.getRelationClasses().add(field.getGenericType().toString());
         }
+        this.relationsClass.add(rel);
 
         linePrepare = "";
         for (Constructor constructor : clazz.getDeclaredConstructors()) {
@@ -158,6 +190,8 @@ public class DiagramCreator {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         DiagramCreator diagramCreator = new DiagramCreator("");
+        diagramCreator.addException("Example");
+        diagramCreator.addException("DataSourceConfiguration");
         diagramCreator.getListFiles("diagram");
     }
 }

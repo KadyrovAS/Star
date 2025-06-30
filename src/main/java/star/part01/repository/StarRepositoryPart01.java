@@ -12,6 +12,10 @@ import star.part01.model.Transaction;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Репозиторий обеспечивает взаимодействие с двумя базами данных:
+ *
+ */
 @Repository
 public class StarRepositoryPart01 {
     private final JdbcTemplate transactionsJdbcTemplate;

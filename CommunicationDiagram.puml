@@ -1,0 +1,324 @@
+@startuml
+class RecommendationControllerPart01{
+-service: RecommendationRuleSetPart01
+-logger: Logger
++{constructor} RecommendationControllerPart01(RecommendationRuleSetPart01 service)
++getRecommendation(UUID id): ResponseEntity<Recommendations>
+}
+
+class RecommendationPart01{
+-id: UUID
+-name: String
+-annotation: String
++{constructor} RecommendationPart01(UUID id, String name, String annotation)
++getName(): String
++toString(): String
++getAnnotation(): String
++getId(): UUID
+}
+
+class Recommendations{
+-user_id: UUID
+-recommendations: RecommendationPart01[]
++{constructor} Recommendations(UUID userId, RecommendationPart01[] recommendations)
++{constructor} Recommendations(UUID userId, List recommendations)
++getRecommendations(): RecommendationPart01[]
++getUser_id(): UUID
+}
+
+class RulePart01{
+-id: UUID
+-instruction: String
+-annotation: String
++{constructor} RulePart01(UUID id, String instruction, String annotation)
++toString(): String
++getAnnotation(): String
++getId(): UUID
++getInstruction(): String
++setId(UUID id): void
+}
+
+class RuleToRecommendation{
+-recommendationId: UUID
+-ruleId: UUID
++{constructor} RuleToRecommendation(UUID recommendationId, UUID ruleId)
++toString(): String
++getRuleId(): UUID
++getRecommendationId(): UUID
+}
+
+class TransactionPart01{
+-amount: int
+-transactionType: String
+-productType: String
++{constructor} TransactionPart01(int amount, String transactionType, String productType)
++toString(): String
++getTransactionType(): String
++getAmount(): int
++getProductType(): String
++transactionTypeEquals(String type): boolean
+}
+
+class StarRepositoryPart01{
+-transactionsJdbcTemplate: JdbcTemplate
+-rulesJdbcTemplate: JdbcTemplate
+-logger: Logger
++{constructor} StarRepositoryPart01(JdbcTemplate transactionsJdbcTemplate, JdbcTemplate rulesJdbcTemplate)
++getRulesById(UUID id): List<UUID>
++getAllRules(): List<RulePart01>
++getAmountsByTypes(UUID id): List<TransactionPart01>
+-lambda$getRecommendations$3(ResultSet arg0, int arg1): RecommendationPart01
+-lambda$getRulesById$2(ResultSet arg0, int arg1): UUID
+-lambda$getAllRules$1(ResultSet arg0, int arg1): RulePart01
+-lambda$getAmountsByTypes$0(ResultSet arg0, int arg1): TransactionPart01
++getRecommendations(): List<RecommendationPart01>
+}
+
+class RecommendationRuleSetPart01{
++getRecommendation(UUID id): Optional<Recommendations>
+}
+
+class RecommendationsChoice{
+-repository: StarRepositoryPart01
+-transactions: List<TransactionPart01>
+-keyWords: String[]
+-logger: Logger
++{constructor} RecommendationsChoice(StarRepositoryPart01 repository)
++toString(): String
++getRecommendation(UUID id): Optional<Recommendations>
+-checkCondition(String evaluate1, String evaluate2, String operation): String
+-toCalculate(String rule): int
++toEvaluate(String rule): boolean
+-toTranslate(String rule): String
+-toSimplify(String text): String
+-toCompare(String evaluate): boolean
+}
+
+class RecommendationControllerPart02{
+-service: RecommendationRuleSetPart02
+-logger: Logger
++{constructor} RecommendationControllerPart02(RecommendationRuleSetPart02 service)
++findAllRecommendations(): List<RecommendationPart02>
++findRecommendationById(UUID id): ResponseEntity<RecommendationPart02>>
++insertRecommendation(RecommendationPart02 recommendation): void
++deleteRecommendation(UUID id): void
+}
+
+class RecommendationPart02{
+-id: UUID
+-name: String
+-text: String
+-rules: RulePart02[]
++{constructor} RecommendationPart02(UUID id, String name, String text, RulePart02[] rules)
++getName(): String
++toString(): String
++getId(): UUID
++getRules(): RulePart02[]
++getText(): String
+}
+
+class RulePart02{
+-query: String
+-arguments: String[]
+-negative: boolean
++{constructor} RulePart02(String query, String[] arguments, boolean negative)
++toString(): String
++getQuery(): String
++isNegative(): boolean
++getArguments(): String[]
+}
+
+class RuleType{
++USER_OF: RuleType
++ACTIVE_USER_OF: RuleType
++TRANSACTION_SUM_COMPARE: RuleType
++TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW: RuleType
+-$VALUES: RuleType[]
+-{constructor} RuleType(String $enum$name, int $enum$ordinal)
++values(): RuleType[]
++valueOf(String name): RuleType
+-$values(): RuleType[]
+}
+
+class TransactionPart02{
+-amount: int
+-count: int
+-transactionType: String
+-productType: String
++{constructor} TransactionPart02(int amount, int count, String transactionType, String productType)
++toString(): String
++getCount(): int
++getTransactionType(): String
++getAmount(): int
++getProductType(): String
++transactionTypeEquals(String type): boolean
+}
+
+class StarRepositoryPart02{
+-transactionsJdbcTemplate: JdbcTemplate
+-rulesJdbcTemplate: JdbcTemplate
+-ruleMapper: RuleMapper
+-logger: Logger
++{constructor} StarRepositoryPart02(JdbcTemplate transactionsJdbcTemplate, JdbcTemplate rulesJdbcTemplate, RuleMapper ruleMapper)
+-deleteRule(UUID id): void
++findRuleById(UUID id): RulePart02
+-insertRule(RulePart02 rule, UUID id): void
++getAmountsByTypes(UUID id): List<TransactionPart02>
+-lambda$updateRuleStatistic$8(ResultSet arg0, int arg1): Integer
+-lambda$findUUIDByName$7(ResultSet arg0, int arg1): UUID
+-lambda$deleteRecommendation$4(ResultSet arg0, int arg1): UUID
+-lambda$findRecommendationById$2(ResultSet arg0, int arg1): UUID
+-lambda$findAllRecommendations$1(ResultSet arg0, int arg1): UUID
++findAllRecommendations(): List<RecommendationPart02>
+-findRecommendationById(UUID id): RecommendationPart02
++insertRecommendation(RecommendationPart02 recommendation): void
++deleteRecommendation(UUID contractId): void
++updateRuleStatistic(String ruleName): void
+-lambda$getAmountsByTypes$6(ResultSet arg0, int arg1): TransactionPart02
+-lambda$deleteRecommendation$5(ResultSet arg0, int arg1): UUID
+-lambda$findRecommendationById$3(RulePart02[] arg0, ResultSet arg1, int arg2): RecommendationPart02
++clearRecommendationCache(): void
+-lambda$findRuleById$0(ResultSet arg0, int arg1): RulePart02
++deleteAll(): void
++findUUIDByName(String firstName, String lastName): List<UUID>
++getStat(): Optional<Stat>>
+-lambda$getStat$9(ResultSet arg0, int arg1): Stat
+}
+
+class RecommendationRuleSetPart02{
++findStat(): Optional<Stat>>
++toClearCaches(): void
++findUserIdByName(String firstName, String lastName): List<UUID>
++findAllRecommendations(): List<RecommendationPart02>
++findRecommendationById(UUID id): Optional<RecommendationPart02>>
++deleteRecommendation(UUID id): void
++addRecommendation(RecommendationPart02 recommendation): void
+}
+
+class RecommendationServicePart02{
+-repository: StarRepositoryPart02
+-logger: Logger
++{constructor} RecommendationServicePart02(StarRepositoryPart02 repository)
+-compare(int arg1, int arg2, String comp): boolean
++findStat(): Optional<Stat>>
++toClearCaches(): void
++findUserIdByName(String firstName, String lastName): List<UUID>
++findAllRecommendations(): List<RecommendationPart02>
++findRecommendationById(UUID id): Optional<RecommendationPart02>>
++deleteRecommendation(UUID contractId): void
+-transactionSumCompare(RulePart02 rule, List transactions): boolean
++addRecommendation(RecommendationPart02 recommendation): void
+-transactionSumCompareDepositWithdraw(RulePart02 rule, List transactions): boolean
+-checkRule(RulePart02 rule, List transactions): boolean
+-checkUserOf(RulePart02 rule, List transactions): boolean
+-activeUserOf(RulePart02 rule, List transactions): boolean
+}
+
+class RuleMapper{
++{constructor} RuleMapper()
++getRule(ResultSet rs): RulePart02
+}
+
+class RecommendationControllerPart03{
+-service: RecommendationRuleSetPart02
+-buildProperties: BuildProperties
+-logger: Logger
++{constructor} RecommendationControllerPart03(RecommendationRuleSetPart02 service, BuildProperties buildProperties)
++findStat(): ResponseEntity<Stat>>
++aboutService(): InformationAboutPackage
++clearCaches(): void
+}
+
+class TelegramBotUpdatesListener{
+-LOGGER: Logger
+-telegramBot: TelegramBot
+-messageHandler: MessageHandler
++{constructor} TelegramBotUpdatesListener(TelegramBot telegramBot, MessageHandler messageHandler)
++init(): void
++process(List updates): int
+}
+
+class InformationAboutPackage{
+-name: String
+-version: String
++{constructor} InformationAboutPackage(String name, String version)
++getName(): String
++getVersion(): String
+}
+
+class SQLCreator{
++SELECT_FROM_RULE: String
++INSERT_INTO_RULE: String
++SELECT_ID_FROM_RECOMMENDATION: String
++SELECT_RULE_ID: String
++SELECT_ALL_FROM_RECOMMENDATION: String
++INSERT_INTO_RECOMMENDATION: String
++INSERT_INTO_RULE_TO_RECOMMENDATION: String
++DELETE_FROM_RULE: String
++SELECT_FROM_RECOMMENDATION_BY_CONTRACT_ID: String
++SELECT_ALL_FROM_RULE_TO_RECOMMENDATION: String
++DELETE_FROM_RULE_TO_RECOMMENDATION: String
++DELETE_FROM_RECOMMENDATION: String
++SELECT_FROM_TRANSACTIONS: String
++DELETE_ALL_FROM_RECOMMENDATION: String
++DELETE_ALL_FROM_RULE: String
++DELETE_ALL_FROM_RULE_TO_RECOMMENDATION: String
++SELECT_ID_FROM_USERS_BY_NAME: String
++SELECT_FROM_RULE_STATISTICS_BY_ID: String
++UPDATE_RULE_STATISTICS: String
++INSERT_INTO_RULE_STATISTICS: String
++SELECT_ALL_RECORDS_FROM_RULE_STATISTICS: String
++{constructor} SQLCreator()
+}
+
+class Stat{
+-ruleName: String
+-count: int
++{constructor} Stat(String ruleName, int count)
++toString(): String
++getCount(): int
++getRuleName(): String
+}
+
+class MessageHandler{
+-logger: Logger
+-telegramBot: TelegramBot
+-service: RecommendationRuleSetPart02
++{constructor} MessageHandler(TelegramBot telegramBot, RecommendationRuleSetPart02 service)
++put(Update update): void
+-sendMessageToUser(Long id, String message): void
+}
+
+class StarApplication{
++{constructor} StarApplication()
++main(String[] args): void
+}
+
+RecommendationRuleSetPart01 <|.. RecommendationsChoice
+RecommendationRuleSetPart02 <|.. RecommendationServicePart02
+
+RecommendationRuleSetPart01 <|-- StarRepositoryPart01
+StarRepositoryPart01 <|-- Recommendations
+Recommendations <|-- RuleToRecommendation
+RuleToRecommendation <|-- RecommendationPart01
+RuleToRecommendation <|-- RulePart01
+RecommendationControllerPart01 <|-- RecommendationRuleSetPart01
+RecommendationRuleSetPart02 <|-- StarRepositoryPart01
+
+StarRepositoryPart01 <|-- TransactionPart01
+
+RecommendationControllerPart02 <|-- RecommendationRuleSetPart02
+RecommendationRuleSetPart02 <|-- StarRepositoryPart02
+StarRepositoryPart02 <|-- RuleMapper
+StarRepositoryPart02 <|-- SQLCreator
+StarRepositoryPart02 <|-- Stat
+StarRepositoryPart02 <|-- TransactionPart02
+StarRepositoryPart02 <|-- RecommendationPart02
+
+RecommendationPart02 <|-- RulePart02
+RecommendationControllerPart03 <|-- InformationAboutPackage
+
+TelegramBotUpdatesListener <|-- MessageHandler
+RecommendationControllerPart03 <|-- RecommendationRuleSetPart02
+
+@enduml

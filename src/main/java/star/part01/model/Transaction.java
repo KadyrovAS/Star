@@ -1,5 +1,10 @@
 package star.part01.model;
 
+/**
+ * Класс содержит результат запроса к базе данных банка, сгруппированный по типу транзакций и типу банковского продукта.
+ * Используется для проверки выполнения правил банка для клиента
+ */
+
 public class Transaction {
     private final int amount;
     private final String transactionType;

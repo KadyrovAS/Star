@@ -2,6 +2,10 @@ package star.part01.model;
 
 import java.util.UUID;
 
+/**
+ * Класс служит для обеспечения связи между правилом и рекомендацией. Используется в реестре
+ * Класс разработан на первом этапе работы
+ */
 public class RuleToRecommendation {
     private final UUID recommendationId;
     private final UUID ruleId;

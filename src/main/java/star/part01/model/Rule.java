@@ -2,6 +2,10 @@ package star.part01.model;
 
 import java.util.UUID;
 
+/**
+ * Класс правила. Разработан для первого этапа работы.
+ * Содержит id, название правила и инструкцию на языке, позволяющем формализвать это правило.
+ */
 public class Rule{
     private UUID id;
     private String instruction;

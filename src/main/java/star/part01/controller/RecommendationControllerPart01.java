@@ -16,6 +16,12 @@ import star.part01.service.RecommendationRuleSet;
 
 import java.util.UUID;
 
+/**
+ * В классе имеется один эндпоинт, запрашивающий рекомендации банка для клиента по его id.
+ * Рекомендации и правила содержатся в базе данных H2 recommendationsPart01.mv.db, подготовленным на первом этапе работы.
+ * Массив рекомендаций, для которых все правила выполняются, возвращается клиенту.
+ * Если для клиента не найдено ни одной рекомендации, то ему возвращается постой массив
+ */
 @RestController
 @RequestMapping("/part01")
 public class RecommendationControllerPart01 {
