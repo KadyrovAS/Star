@@ -131,7 +131,6 @@ public class DiagramCreator {
     }
 
     private String getReturnType(Type returnType) {
-//        Type returnType = method.getGenericReturnType();
 
         if (returnType instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) returnType;
