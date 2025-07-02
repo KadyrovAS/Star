@@ -6,6 +6,10 @@ import java.sql.SQLException;
 import org.springframework.stereotype.Component;
 import star.part02.model.Rule;
 
+/**
+ *
+ */
+
 @Component
 public class RuleMapper{
     public Rule getRule(ResultSet rs) throws SQLException {

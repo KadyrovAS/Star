@@ -11,7 +11,11 @@ import star.part02.repository.StarRepositoryPart02;
 import java.util.UUID;
 
 @Service
-public class RecommendationServiceExamplePart2 {
+/**
+ * Сервисный класс, обеспечивающий заполнение таблиц базы данных star postgresql рекомендациями и правилами в
+ * соответствии с ТЗ второй части
+ */
+public class RecommendationServiceExamplePart2{
     private final StarRepositoryPart02 repository;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationServiceExamplePart2.class);
 
@@ -19,12 +23,13 @@ public class RecommendationServiceExamplePart2 {
         this.repository = repository;
     }
 
-    public void createDb(){
+
+    public void createDb() {
         repository.deleteAll();
         Rule[] rules = new Rule[3];
 
         rules[0] = new Rule(
-            "USER_OF",
+                "USER_OF",
                 new String[]{"CREDIT"},
                 true
         );
@@ -77,7 +82,7 @@ public class RecommendationServiceExamplePart2 {
                 false
         );
         rules[1] = new Rule(
-          "TRANSACTION_SUM_COMPARE",
+                "TRANSACTION_SUM_COMPARE",
                 new String[]{"SAVING", "DEPOSIT", ">=", "50000"},
                 false
         );

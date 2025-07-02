@@ -46,7 +46,11 @@ public class RecommendationsChoice implements RecommendationRuleSet {
         this.repository = repository;
     }
 
-
+    /**
+     *
+     * @param id Идентификатор клиент банка
+     * @return Возвращает список рекомендаций
+     */
     @Override
     public Optional<Recommendations> getRecommendation(UUID id) {
         Map<UUID, Boolean> mapWithResult = new HashMap<>();
@@ -74,6 +78,7 @@ public class RecommendationsChoice implements RecommendationRuleSet {
         return Optional.of(new Recommendations(id, recommendations));
     }
 
+
     public boolean toEvaluate(String rule){
         rule = toTranslate(rule);
         rule = toSimplify(rule);
@@ -81,8 +86,11 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     }
 
     /**
-     * Раскрывает скобки в сложном выражении
-     * @param rule
+     * Рассчитывает значение всех функций. Перечень операторов содержится в массиве keyWords.
+     * Вместо функций с аргументами в текст подставляется рассчитанное значение.
+     * Например, имеется строка: "AMOUNT(CREDIT) > 10". Результат AMOUNT(CREDIT) = 100. После
+     * получения результата строка будет преобразована в "100 > 10"
+     * @param rule Текст банковского правила, формализованного с помощью разработанного языка
      * @return
      */
     private String toTranslate(String rule){
@@ -108,9 +116,12 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     }
 
     /**
-     * Вычисляет обороты по счетам в зависимости от типа транзакции и типа товара
-     * @param rule
-     * @return
+     * Вычисляет обороты по счетам клиента в зависимости от типа транзакции и типа товара.
+     *
+     * @param rule формализованная инструкция правила, например: DEPOSIT(CREDIT). Рассчитает сумму транзакций с типом
+     *             DEPOSIT в отношении продуктов с типом CREDIT.
+     *             AMOUNT(CREDIT, SAVE) - посчитает сумму всех транзакций в отношении продуктов с типами: CREDIT и SAVE.
+     * @return обороты по счетам, в соответствии с правилом
      */
     private int toCalculate(String rule){
         int indStart;
@@ -145,10 +156,11 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     }
 
     /**
-     * Вычисляет сложное выражение по частям
-     *
-     * @param text
-     * @return
+     * Вычисляет сложное выражение по частям. Рекурсивно сначала раскрывает скобки, затем выполняет операцию AND и
+     * в конце OR.
+     * Вместо выражений в скобках в текст подставляется true или false
+     * @param text Выражение, которое необходимо упростить: раскрыть скобки, выполнить операцию AND или OR
+     * @return результат false или true
      */
     private String toSimplify(String text){
         int indStart;
@@ -208,10 +220,11 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     /**
      * На вход поступает два логических выражения, соединенных логическим оператором AND или OR
      * Результатом является
-     * @param evaluate1
-     * @param evaluate2
-     * @param operation
-     * @return
+     * @param evaluate1 Логическое выражение 1
+     * @param evaluate2 Логическое выражение 2
+     * @param operation Логический оператор
+     * @return результат строка tue или false
+     * @throws IllegalArgumentException, если логический оператор не установлен
      */
     private String checkCondition(String evaluate1, String evaluate2, String operation){
         boolean arg1 = toCompare(evaluate1);
@@ -231,7 +244,8 @@ public class RecommendationsChoice implements RecommendationRuleSet {
      * Получает на вход выражение типа x > y, где x и y - целые числа.
      * Возвращает результат сравнения (true или false).
      * @param evaluate
-     * @return
+     * @return результат сравнения (true или false)
+     * @throws - IllegalArgumentException, если знак сравнения не установлен
      */
     private boolean toCompare(String evaluate){
         String[] operations = {"<>", ">=", "<=", "<", ">", "="};

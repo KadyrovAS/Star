@@ -2,6 +2,9 @@ package star.part01.service;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Сервисный класс. Содержит тексты рекомендаций банка
+ */
 @Component
 public class RecommendationByName{
     private static final String RECOMMENDATION_OF_INVEST_500 =
@@ -50,6 +53,12 @@ public class RecommendationByName{
         недвижимости, автомобиля, образование, лечение и многое другое.
         \n\n
         Не упустите возможность воспользоваться выгодными условиями кредитования от нашей компании!""";
+
+    /**
+     *
+     * @param name Краткое название рекомендации
+     * @return Текст рекомендации
+     */
     public static String getRecommendationByName(String name){
         if (name.equals("Invest 500")){
             return RECOMMENDATION_OF_INVEST_500;

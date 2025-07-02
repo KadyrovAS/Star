@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import star.part02.service.RecommendationServiceExamplePart2;
 
+/**
+ * Это вспомогательный класс. В работе приложения не участвует. Он необходим для заполнения базы данных
+ * star в postgresql со списком рекомендаций. Все рекомендации соответствуют ТЗ банка для второго этапа работы.
+ */
 @RestController
 @RequestMapping("/ExamplePart2")
 

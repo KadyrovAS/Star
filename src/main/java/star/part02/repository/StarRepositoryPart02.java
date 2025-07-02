@@ -17,6 +17,11 @@ import star.part03.model.Stat;
 
 import java.util.*;
 
+/**
+ * Обеспечивает взаимодействие с базами данных:
+ * - transaction.mv.db, предложенная банком и доступная только для чтения;
+ * - star - базой данных postgresql
+ */
 @Repository
 public class StarRepositoryPart02{
     private final JdbcTemplate transactionsJdbcTemplate;
@@ -32,6 +37,11 @@ public class StarRepositoryPart02{
         this.ruleMapper = ruleMapper;
     }
 
+    /**
+     * Возвращает банковское правило по индентификатору
+     * @param id идентификатор правила
+     * @return Правило банка
+     */
     @Cacheable(value = "rules", key = "#id")
     public Rule findRuleById(UUID id) {
         try {
@@ -44,6 +54,7 @@ public class StarRepositoryPart02{
             return null;
         }
     }
+
 
     private void insertRule(Rule rule, UUID id) {
         Optional<String> argument01;
@@ -124,6 +135,14 @@ public class StarRepositoryPart02{
         );
     }
 
+    /**
+     * Добавляет в таблицу RECOMMENDATION новую рекомендацию.
+     * - id присваивается сервисом;
+     * - CONTRACT_ID - id, установленный банком в id.
+     * Добавляет в таблицу RULE_TO_RECOMMENDATION запись, обеспечивающую связь "many to many" между таблицами
+     * RULE и RECOMMENDATION
+     * @param recommendation
+     */
     public void insertRecommendation(Recommendation recommendation) {
         UUID ruleId;
         UUID id = UUID.randomUUID();
@@ -147,10 +166,20 @@ public class StarRepositoryPart02{
         }
     }
 
+    /**
+     * Удаляет правило по его идентификатору
+     * @param id Идентификатор правила
+     */
     private void deleteRule(UUID id) {
         rulesJdbcTemplate.update(SQLCreator.DELETE_FROM_RULE, id.toString());
     }
 
+    /**
+     * Удаляет рекомендацию по ее идентификатору CONTRACT_ID, установленному банком.
+     * Записи с одинаковыми CONTRACT_ID означают выполнение логики OR
+     * Также удаляются все связанные записи из таблиц RULE и RULE_TO_RECOMMENDATION
+     * @param contractId Идентификатор, установленный банком
+     */
     public void deleteRecommendation(UUID contractId) {
         logger.info("deleteRecommendation: contractId = '{}'", contractId);
         List<UUID> listId = rulesJdbcTemplate.query(
@@ -174,10 +203,11 @@ public class StarRepositoryPart02{
         rulesJdbcTemplate.update(SQLCreator.DELETE_FROM_RECOMMENDATION, contractId);
     }
 
-    private record RecommendationRecord(String name, String text, String query){
-    }
-
-
+    /**
+     * Возвращает список Transaction для клиента с заданным идентификатором
+     * @param id Идентификатор клиента
+     * @return Список транзакций клиента, сгруппированных по типу транзакций и типу банковских операций
+     */
     @Cacheable(value = "transactions", key = "#id")
     public List<Transaction> getAmountsByTypes(UUID id) {
 
@@ -193,12 +223,21 @@ public class StarRepositoryPart02{
         );
     }
 
+    /**
+     * Удаляет все записи из таблиц базы данных star
+     */
     public void deleteAll() {
         rulesJdbcTemplate.update(SQLCreator.DELETE_ALL_FROM_RECOMMENDATION);
         rulesJdbcTemplate.update(SQLCreator.DELETE_ALL_FROM_RULE);
         rulesJdbcTemplate.update(SQLCreator.DELETE_ALL_FROM_RULE_TO_RECOMMENDATION);
     }
 
+    /**
+     * Возвращает идентификатор клиента по его имени и фамилии
+     * @param firstName фамилия клиента
+     * @param lastName фамилия клиента
+     * @return
+     */
     public List<UUID> findUUIDByName(String firstName, String lastName){
         return transactionsJdbcTemplate.query(
                 SQLCreator.SELECT_ID_FROM_USERS_BY_NAME,
@@ -208,6 +247,10 @@ public class StarRepositoryPart02{
         );
     }
 
+    /**
+     * Обновляет таблицу со статистикой для каждого правила
+     * @param ruleName Краткое название правила
+     */
     public void updateRuleStatistic(String ruleName){
         List<Integer>results = rulesJdbcTemplate.query(
                 SQLCreator.SELECT_FROM_RULE_STATISTICS_BY_ID,
@@ -230,6 +273,10 @@ public class StarRepositoryPart02{
         }
     }
 
+    /**
+     * Возвращает список результатов статистического сбора информации
+     * @return
+     */
    public Optional<List<Stat>>getStat(){
         List<Stat>stats = rulesJdbcTemplate.query(
                 SQLCreator.SELECT_ALL_RECORDS_FROM_RULE_STATISTICS,

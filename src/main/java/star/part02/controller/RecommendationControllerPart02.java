@@ -34,6 +34,11 @@ public class RecommendationControllerPart02 {
             responseCode = "200",
             description = "Сформирован список рекомендаций, либо пустой массив, если рекомендаций нет"
     )
+    /**
+     * Возвращает список рекомендаций для клиента банка с заданным id
+     * @param id Id клиента банка
+     * @return список рекомендаций
+     */
     public ResponseEntity<List<Recommendation>> findRecommendationById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findRecommendationById(id).orElse(Collections.emptyList()));
     }
@@ -47,6 +52,9 @@ public class RecommendationControllerPart02 {
             responseCode = "200",
             description = "Сформирован полный список всех имеющихся рекомендаций"
     )
+    /**
+     * Возвращает список всех рекомендаций банка
+     */
     public List<Recommendation>findAllRecommendations(){
         return service.findAllRecommendations();
     }
@@ -60,6 +68,11 @@ public class RecommendationControllerPart02 {
             responseCode = "200",
             description = "Рекомендация со списком правил добавлена"
     )
+
+    /**
+     * Добавляет рекомендацию вместе с правилами
+     * @param recommendation Рекомендация вместе с правилами
+     */
     public void insertRecommendation(@RequestBody Recommendation recommendation) {
         logger.info("insertRecommendation: {}", recommendation);
         service.addRecommendation(recommendation);
@@ -75,6 +88,10 @@ public class RecommendationControllerPart02 {
             responseCode = "200",
             description = "Рекомендация с заданным id удалена"
     )
+    /**
+     * Удаляет рекомендацию
+     * @param id Идентификатор рекомендации
+     */
     public void deleteRecommendation(@RequestBody UUID id) {
         logger.info("deleteRecommendation: {}", id);
         service.deleteRecommendation(id);

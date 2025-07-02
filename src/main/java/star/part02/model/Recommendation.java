@@ -3,6 +3,9 @@ package star.part02.model;
 import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * Рекомендация вместе со списком правил
+ */
 public class Recommendation{
     private UUID id;
     private String name;

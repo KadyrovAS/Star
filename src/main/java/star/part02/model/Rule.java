@@ -2,6 +2,9 @@ package star.part02.model;
 
 import java.util.Arrays;
 
+/**
+ * Формализованное правило банка
+ */
 public class Rule{
     private String query;
     private String[] arguments;

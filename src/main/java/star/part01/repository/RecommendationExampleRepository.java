@@ -9,6 +9,9 @@ import star.part01.model.Recommendation;
 import star.part01.model.Rule;
 import star.part01.model.RuleToRecommendation;
 
+/**
+ * Заполняет базу данных recommendationsPart01.mv.db рекомендациями банка в формализованном виде
+ */
 @Repository
 public class RecommendationExampleRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -18,11 +21,10 @@ public class RecommendationExampleRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addRecommendationExample(String sqlLine) {
-        logger.info(sqlLine);
-        jdbcTemplate.update(sqlLine);
-    }
-
+    /**
+     * Добавляет рекомендацию в таблицу RECOMMENDATION
+     * @param recommendation Рекомендация банка (устанавливается банком в ТЗ)
+     */
     public void addRecommendation(Recommendation recommendation){
         logger.info("addRecommendation");
         String sql = "INSERT INTO RECOMMENDATION (ID, NAME, ANNOTATION) VALUES (?, ?, ?)";
@@ -34,6 +36,11 @@ public class RecommendationExampleRepository {
         );
     }
 
+    /**
+     * Добавляет правило в таблицу RULE.
+     * Поле INSTRUCTION - содержит правило в формализованном виде
+     * @param rule Правило. Устанавливается банком.
+     */
     public void addRule(Rule rule){
         logger.info("addRule");
         jdbcTemplate.update(
@@ -44,6 +51,12 @@ public class RecommendationExampleRepository {
         );
     }
 
+    /**
+     * Разные банковские рекомендации могут иметь одинаковые правила.
+     * Метод добавляет запись в таблицу RECOMMENDATION_RULES, обеспечивающей связь "many to many" между таблицами
+     * RULE и RECOMMENDATION
+     * @param ruleToRecommendation
+     */
     public void addRecommendationRules(RuleToRecommendation ruleToRecommendation){
         logger.info("addRecommendationRules");
         jdbcTemplate.update(
@@ -53,6 +66,9 @@ public class RecommendationExampleRepository {
         );
     }
 
+    /**
+     * Перед добавлением рекомендаций и правил все записи из всех таблиц базы данных удаляются
+     */
     public void deleteAll(){
         logger.info("deleteAll");
         jdbcTemplate.update("DELETE FROM RECOMMENDATION");

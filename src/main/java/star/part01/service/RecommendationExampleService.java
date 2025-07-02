@@ -12,6 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Сервисный класс. Используется для формирования базы данных recommendationsPart01.mv.db
+ */
 @Service
 public class RecommendationExampleService {
     private final RecommendationExampleRepository repository;
@@ -21,13 +24,19 @@ public class RecommendationExampleService {
         this.repository = repository;
     }
 
-
+    /**
+     * Очищает базу данных и добавляет в нее рекомендации банка
+     */
     public void addExample(){
         repository.deleteAll();
         addRecommendation();
         addRules();
     }
 
+    /**
+     * Добавляет в базу данных список всех рекомендаций.
+     * Id, краткое название рекомендации и текст рекомендации устанавливаются банком в ТЗ
+     */
     public void addRecommendation() {
         String name = "Invest 500";
         repository.addRecommendation(new Recommendation(
@@ -51,6 +60,13 @@ public class RecommendationExampleService {
         ));
     }
 
+    /**
+     * 1. Формирует список правил банка.
+     * - Для каждого правила формируется свой id.
+     * - Текст инструкции формализован с помощью разработанного языка
+     * - Текст правила установлен банком в ТЗ
+     * 2. Заполняет таблицу, обеспечивающую связь "many to many" между таблицами рекомендаций и правилами
+     */
     public void addRules(){
         List<Rule>rules = new LinkedList<>();
 

@@ -14,7 +14,9 @@ import java.util.UUID;
 
 /**
  * Репозиторий обеспечивает взаимодействие с двумя базами данных:
- *
+ * transaction.mv.db - предоставляется банком. Доступ только для чтения
+ * recommendationsPart01.mv.db - создана на 1-м этапе работы. Содержит рекомендации и правила банка в формализованном
+ * виде.
  */
 @Repository
 public class StarRepositoryPart01 {
@@ -28,6 +30,12 @@ public class StarRepositoryPart01 {
         this.rulesJdbcTemplate = rulesJdbcTemplate;
     }
 
+    /**
+     *
+     * @param id Идентификатор клиента банка
+     * @return Список транзакций, сгруппированный по типу транзакций и типу банковских продуктов.
+     * На основании этого списка осуществляется проверка выполнения банковских правил
+     */
     public List<Transaction> getAmountsByTypes(UUID id) {
         logger.info("id = {}", id);
         return transactionsJdbcTemplate.query(
@@ -43,6 +51,9 @@ public class StarRepositoryPart01 {
         );
     }
 
+    /**
+     * @return возвращает список всех банковских правил
+     */
     public List<Rule> getAllRules() {
         logger.info("getRules");
         return rulesJdbcTemplate.query(
@@ -55,6 +66,11 @@ public class StarRepositoryPart01 {
         );
     }
 
+    /**
+     *
+     * @param id Идентификатор банковской рекомендации (установлен банком в ТЗ).
+     * @return Список идентификаторов банковских правил (присваиваются сервисом)
+     */
     public List<UUID> getRulesById(UUID id){
         logger.info("getRules by ID: {}", id );
         return rulesJdbcTemplate.query(
@@ -64,6 +80,10 @@ public class StarRepositoryPart01 {
         );
     }
 
+    /**
+     *
+     * @return Список всех банковских рекомендаций
+     */
     public List<Recommendation> getRecommendations() {
         logger.info("getRecommendations");
         return rulesJdbcTemplate.query(
