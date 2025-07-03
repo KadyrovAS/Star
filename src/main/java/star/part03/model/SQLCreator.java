@@ -1,5 +1,9 @@
 package star.part03.model;
 
+/**
+ * Сервисный класс, содержащий sql - строки для различных целей.
+ * Используется в репозитории
+ */
 public class SQLCreator{
     public static final String SELECT_FROM_RULE = "SELECT * FROM RULE WHERE ID = ?";
     public static final String INSERT_INTO_RULE = "INSERT INTO RULE " +

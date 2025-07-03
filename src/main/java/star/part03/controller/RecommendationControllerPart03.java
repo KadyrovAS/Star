@@ -38,6 +38,9 @@ public class RecommendationControllerPart03 {
             responseCode = "200",
             description = "Сформирована статистика выполнения правил"
     )
+    /**
+     * Возвращет статистику выполнения правил банка
+     */
     public ResponseEntity<List<Stat>> findStat() {
         return ResponseEntity.ok(service.findStat().orElse(Collections.emptyList()));
     }
@@ -51,6 +54,9 @@ public class RecommendationControllerPart03 {
             responseCode = "200",
             description = "Кэш запросов рекомендаций очищен"
     )
+    /**
+     * Очищает кэш запросов рекомендаций
+     */
     public void clearCaches() {
         service.toClearCaches();
     }
@@ -64,8 +70,11 @@ public class RecommendationControllerPart03 {
             responseCode = "200",
             description = "Получена информация о сервисе"
     )
+
+    /**
+     * Возвращает информацию о package: наименование и версия
+     */
     public InformationAboutPackage aboutService(){
-        Package pkg = getClass().getPackage();
         return new InformationAboutPackage(
                buildProperties.getName(),
                 buildProperties.getVersion()

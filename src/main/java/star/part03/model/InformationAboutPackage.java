@@ -1,5 +1,8 @@
 package star.part03.model;
 
+/**
+ * Содержит информацию о сборке: наименование и версия
+ */
 public class InformationAboutPackage{
     private final String name;
     private final String version;

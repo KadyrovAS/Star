@@ -12,9 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * Формирует puml файл для построения диаграммы
- */
 public class DiagramCreator{
     static class RelationsClass{
         private String className;

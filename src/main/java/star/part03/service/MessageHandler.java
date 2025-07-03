@@ -13,7 +13,9 @@ import star.part02.service.RecommendationRuleSet;
 import java.util.List;
 import java.util.UUID;
 
-
+/**
+ * Используется для обеспечения работы telegram бота
+ */
 @Service
 public class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
@@ -26,10 +28,19 @@ public class MessageHandler {
         this.service = service;
     }
 
+    /**
+     * Отправляет сообщение сервиса пользователю telegram
+     * @param id Идентификатор пользователя telegram, приславшего сообщение
+     * @param message Текст сформированного сообщения
+     */
     private void sendMessageToUser(Long id, String message){
         telegramBot.execute(new SendMessage(id, message));
     }
 
+    /**
+     * Парсит сообщение, полученное от пользователя telegram
+     * @param update Сообщение из telegram
+     */
     public void put(Update update) {
         Long id = update.message().chat().id();
         String text = update.message().text();

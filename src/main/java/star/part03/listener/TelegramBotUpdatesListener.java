@@ -13,6 +13,9 @@ import star.part03.service.MessageHandler;
 import java.util.List;
 
 @Service
+/**
+ * Данный класс обеспечивает взаимодействие сервиса с телеграм
+ */
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);

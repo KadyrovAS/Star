@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import star.part02.model.Rule;
 
 /**
- *
+ * Сервисный класс.
+ * Используется в репозитории для преобразования данных записи из таблицы RULE в объект Rule
  */
 
 @Component
