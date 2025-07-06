@@ -184,7 +184,6 @@ public class RecommendationsChoice implements RecommendationRuleSet {
             text.substring(indEnd);
         }
 
-        //TODO
         String[] operators = {"AND", "OR"};
         for (String op: operators) {
             indStart = text.indexOf(op);
