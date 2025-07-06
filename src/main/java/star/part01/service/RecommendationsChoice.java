@@ -137,7 +137,7 @@ public class RecommendationsChoice implements RecommendationRuleSet {
         command = rule.substring(0, indStart).strip();
         String [] arguments = argumentLine.split(",");
 
-        
+
         for (Transaction transaction: transactions){
             for (String argument: arguments){
                 argument = argument.strip();
@@ -184,23 +184,37 @@ public class RecommendationsChoice implements RecommendationRuleSet {
             text.substring(indEnd);
         }
 
+        //TODO
         String[] operators = {"AND", "OR"};
         for (String op: operators) {
-            if (text.indexOf(op) > 0) {
-                indStart = text.indexOf(op) + op.length();
+            indStart = text.indexOf(op);
+            if (indStart > 0) {
                 indEnd = text.length();
-                for (int i = indStart; i < text.length(); i++) {
-                    if (text.startsWith(operators[0], i) || text.startsWith(operators[1], i)) {
-                        indEnd = i;
+                boolean wasFound = false;
+                for (int i = indStart + op.length(); i < indEnd; i++) {
+                    for (String opSecond : operators) {
+                        if (text.startsWith(opSecond, i)) {
+                            indEnd = i;
+                            wasFound = true;
+                            break;
+                        }
+                    }
+                    if (wasFound){
                         break;
                     }
                 }
                 evaluate1 = text.substring(indStart, indEnd);
 
-                indStart = 0;
-                for (int i = indStart - op.length() - 1; i >= 0; i--) {
-                    if (text.startsWith(op, i)) {
-                        indStart = i + op.length();
+                wasFound = false;
+                for (int i = indStart - 1; i >= 0; i--) {
+                    for (String opSecond: operators) {
+                        if (text.startsWith(opSecond, i)) {
+                            indStart = i + opSecond.length();
+                            wasFound = true;
+                            break;
+                        }
+                    }
+                    if (wasFound){
                         break;
                     }
                 }
