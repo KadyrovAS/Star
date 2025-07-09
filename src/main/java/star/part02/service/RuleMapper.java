@@ -19,7 +19,7 @@ public class RuleMapper{
                 rs.getString("ARGUMENT02"),
                 rs.getString("ARGUMENT03"),
                 rs.getString("ARGUMENT04"),
-                };
+        };
         String query = rs.getString("QUERY");
         boolean negative = rs.getBoolean("NEGATIVE");
         return new Rule(query, arguments, negative);

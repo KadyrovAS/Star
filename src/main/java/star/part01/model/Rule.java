@@ -29,7 +29,7 @@ public class Rule{
         return annotation;
     }
 
-    public void setId(UUID id){
+    public void setId(UUID id) {
         this.id = id;
     }
 

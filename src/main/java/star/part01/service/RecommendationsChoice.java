@@ -9,34 +9,40 @@ import star.part01.model.Rule;
 import star.part01.model.Transaction;
 import star.part01.repository.StarRepositoryPart01;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.LinkedList;
+import java.util.Optional;
+
 
 /**
- *  Анализирует тип транзакции по ключевым словам: DEPOSIT, WITHDRAW, AMOUNT, DIFFERENCE
- *  DEPOSIT - операция пополнения;
- *  WITHDRAW - операция траты;
- *  AMOUNT - общие обороты;
- *  DIFFERENCE - суммирует amount для DEPOSIT и вычитает amount для WITHDRAW
- *  Например:
- *  1. DEPOSIT(SAVING) найдет сумму для транзакций DEPOSIT и типом продукта SAVING;
- *  2. AMOUNT(SAVING, CREDIT) - найдет сумму всех транзакций с типами продукта SAVING и CREDIT;
- *  3. Допускается использование следующих знаков сравнения:
- *  &gt; - больше;
- *  &lt; - меньше;
- *  = - равно;
- *  &gt;= - больше или равно;
- *  &lt;= - меньше или равно;
- *  &lt;&gt; - не равно.
- *  4. Допускается использование логических операций и скобки:
- *  AND - И;
- *  OR - ИЛИ.
- *
- *  Результатом логического выражения должна быть ложь или истина.
+ * Анализирует тип транзакции по ключевым словам: DEPOSIT, WITHDRAW, AMOUNT, DIFFERENCE
+ * DEPOSIT - операция пополнения;
+ * WITHDRAW - операция траты;
+ * AMOUNT - общие обороты;
+ * DIFFERENCE - суммирует amount для DEPOSIT и вычитает amount для WITHDRAW
+ * Например:
+ * 1. DEPOSIT(SAVING) найдет сумму для транзакций DEPOSIT и типом продукта SAVING;
+ * 2. AMOUNT(SAVING, CREDIT) - найдет сумму всех транзакций с типами продукта SAVING и CREDIT;
+ * 3. Допускается использование следующих знаков сравнения:
+ * &gt; - больше;
+ * &lt; - меньше;
+ * = - равно;
+ * &gt;= - больше или равно;
+ * &lt;= - меньше или равно;
+ * &lt;&gt; - не равно.
+ * 4. Допускается использование логических операций и скобки:
+ * AND - И;
+ * OR - ИЛИ.
+ * <p>
+ * Результатом логического выражения должна быть ложь или истина.
  */
 
 @Component("recommendationsChoice")
 
-public class RecommendationsChoice implements RecommendationRuleSet {
+public class RecommendationsChoice implements RecommendationRuleSet{
     private final StarRepositoryPart01 repository;
     private List<Transaction> transactions;
     private String[] keyWords = {"DEPOSIT", "WITHDRAW", "AMOUNT", "DIFFERENCE"};
@@ -47,7 +53,6 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     }
 
     /**
-     *
      * @param id Идентификатор клиент банка
      * @return Возвращает список рекомендаций
      */
@@ -58,7 +63,7 @@ public class RecommendationsChoice implements RecommendationRuleSet {
 
         this.transactions = repository.getAmountsByTypes(id);
 
-        for (Rule rule: repository.getAllRules()){
+        for (Rule rule : repository.getAllRules()) {
             mapWithResult.put(rule.getId(), toEvaluate(rule.getInstruction()));
         }
 
@@ -79,10 +84,10 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     }
 
 
-    public boolean toEvaluate(String rule){
+    public boolean toEvaluate(String rule) {
         rule = toTranslate(rule);
         rule = toSimplify(rule);
-    return toCompare(rule);
+        return toCompare(rule);
     }
 
     /**
@@ -90,10 +95,11 @@ public class RecommendationsChoice implements RecommendationRuleSet {
      * Вместо функций с аргументами в текст подставляется рассчитанное значение.
      * Например, имеется строка: "AMOUNT(CREDIT) > 10". Результат AMOUNT(CREDIT) = 100. После
      * получения результата строка будет преобразована в "100 > 10"
+     *
      * @param rule Текст банковского правила, формализованного с помощью разработанного языка
      * @return
      */
-    private String toTranslate(String rule){
+    private String toTranslate(String rule) {
         int indStart;
         int indEnd;
         String expression;
@@ -112,7 +118,7 @@ public class RecommendationsChoice implements RecommendationRuleSet {
                 }
             }
         }
-    return rule;
+        return rule;
     }
 
     /**
@@ -123,7 +129,7 @@ public class RecommendationsChoice implements RecommendationRuleSet {
      *             AMOUNT(CREDIT, SAVE) - посчитает сумму всех транзакций в отношении продуктов с типами: CREDIT и SAVE.
      * @return обороты по счетам, в соответствии с правилом
      */
-    private int toCalculate(String rule){
+    private int toCalculate(String rule) {
         int indStart;
         int indEnd;
         String argumentLine;
@@ -135,14 +141,14 @@ public class RecommendationsChoice implements RecommendationRuleSet {
 
         argumentLine = rule.substring(indStart + 1, indEnd);
         command = rule.substring(0, indStart).strip();
-        String [] arguments = argumentLine.split(",");
+        String[] arguments = argumentLine.split(",");
 
 
-        for (Transaction transaction: transactions){
-            for (String argument: arguments){
+        for (Transaction transaction : transactions) {
+            for (String argument : arguments) {
                 argument = argument.strip();
-                if(transaction.transactionTypeEquals(command) && argument.equals(transaction.getProductType())){
-                    if (command.equals("AMOUNT") || command.equals(transaction.getTransactionType())){
+                if (transaction.transactionTypeEquals(command) && argument.equals(transaction.getProductType())) {
+                    if (command.equals("AMOUNT") || command.equals(transaction.getTransactionType())) {
                         amount += transaction.getAmount();
                     } else if (command.equals("DIFFERENCE") && transaction.getTransactionType().equals("WITHDRAW")) {
                         amount -= transaction.getAmount();
@@ -159,20 +165,21 @@ public class RecommendationsChoice implements RecommendationRuleSet {
      * Вычисляет сложное выражение по частям. Рекурсивно сначала раскрывает скобки, затем выполняет операцию AND и
      * в конце OR.
      * Вместо выражений в скобках в текст подставляется true или false
+     *
      * @param text Выражение, которое необходимо упростить: раскрыть скобки, выполнить операцию AND или OR
      * @return результат false или true
      */
-    private String toSimplify(String text){
+    private String toSimplify(String text) {
         int indStart;
         int indEnd;
         String evaluate1;
         String evaluate2;
-        while (text.contains("(")){
+        while (text.contains("(")) {
             int count = 1;
             indStart = text.indexOf("(");
             indEnd = indStart + 1;
-            while (count > 0){
-                if (text.charAt(indEnd) == '('){
+            while (count > 0) {
+                if (text.charAt(indEnd) == '(') {
                     count += 1;
                 } else if (text.charAt(indEnd) == ')') {
                     count -= 1;
@@ -181,11 +188,11 @@ public class RecommendationsChoice implements RecommendationRuleSet {
             }
             text = text.substring(0, indStart) +
                     toSimplify(text.substring(indStart + 1, indEnd - 1)) +
-            text.substring(indEnd);
+                    text.substring(indEnd);
         }
 
         String[] operators = {"AND", "OR"};
-        for (String op: operators) {
+        for (String op : operators) {
             indStart = text.indexOf(op);
             if (indStart > 0) {
                 indEnd = text.length();
@@ -198,7 +205,7 @@ public class RecommendationsChoice implements RecommendationRuleSet {
                             break;
                         }
                     }
-                    if (wasFound){
+                    if (wasFound) {
                         break;
                     }
                 }
@@ -206,14 +213,14 @@ public class RecommendationsChoice implements RecommendationRuleSet {
 
                 wasFound = false;
                 for (int i = indStart - 1; i >= 0; i--) {
-                    for (String opSecond: operators) {
+                    for (String opSecond : operators) {
                         if (text.startsWith(opSecond, i)) {
                             indStart = i + opSecond.length();
                             wasFound = true;
                             break;
                         }
                     }
-                    if (wasFound){
+                    if (wasFound) {
                         break;
                     }
                 }
@@ -233,19 +240,20 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     /**
      * На вход поступает два логических выражения, соединенных логическим оператором AND или OR
      * Результатом является
+     *
      * @param evaluate1 Логическое выражение 1
      * @param evaluate2 Логическое выражение 2
      * @param operation Логический оператор
      * @return результат строка tue или false
      * @throws IllegalArgumentException, если логический оператор не установлен
      */
-    private String checkCondition(String evaluate1, String evaluate2, String operation){
+    private String checkCondition(String evaluate1, String evaluate2, String operation) {
         boolean arg1 = toCompare(evaluate1);
         boolean arg2 = toCompare(evaluate2);
 
-        if (operation.equals("AND")){
-            return String.valueOf(arg1 && arg2) ;
-        }else if(operation.equals("OR")){
+        if (operation.equals("AND")) {
+            return String.valueOf(arg1 && arg2);
+        } else if (operation.equals("OR")) {
             return String.valueOf(arg1 || arg2);
         }
 
@@ -256,22 +264,23 @@ public class RecommendationsChoice implements RecommendationRuleSet {
     /**
      * Получает на вход выражение типа x > y, где x и y - целые числа.
      * Возвращает результат сравнения (true или false).
+     *
      * @param evaluate
      * @return результат сравнения (true или false)
      * @throws - IllegalArgumentException, если знак сравнения не установлен
      */
-    private boolean toCompare(String evaluate){
+    private boolean toCompare(String evaluate) {
         String[] operations = {"<>", ">=", "<=", "<", ">", "="};
-        if (evaluate.strip().equals("true")){
+        if (evaluate.strip().equals("true")) {
             return true;
         }
-        if (evaluate.strip().equals("false")){
+        if (evaluate.strip().equals("false")) {
             return false;
         }
 
-        for(String op: operations){
+        for (String op : operations) {
             String[] args = evaluate.split(op);
-            if (args.length == 2){
+            if (args.length == 2) {
                 int arg1 = Integer.parseInt(args[0].strip());
                 int arg2 = Integer.parseInt(args[1].strip());
                 switch (op) {

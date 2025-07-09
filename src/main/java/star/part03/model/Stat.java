@@ -3,7 +3,7 @@ package star.part03.model;
 /**
  * Используется для получения статистической информации
  */
-public class Stat {
+public class Stat{
     private String ruleName;
     private int count;
 

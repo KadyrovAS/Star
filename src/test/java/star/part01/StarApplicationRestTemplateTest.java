@@ -27,12 +27,12 @@ public class StarApplicationRestTemplateTest{
 
     private UUID id = UUID.fromString("cd515076-5d8a-44be-930e-8d4fcb79f42d");
 
-    private String getUrl(){
+    private String getUrl() {
         return "http://localhost:" + port + "/part01/recommendation/" + id;
     }
 
     @Test
-    public void testRecommendationControllerIsOk(){
+    public void testRecommendationControllerIsOk() {
         ResponseEntity<Recommendations> response = restTemplate.getForEntity(
                 getUrl(),
                 Recommendations.class
@@ -41,7 +41,7 @@ public class StarApplicationRestTemplateTest{
     }
 
     @Test
-    public void testRecommendationControllerNotNull(){
+    public void testRecommendationControllerNotNull() {
         ResponseEntity<Recommendations> response = restTemplate.getForEntity(
                 getUrl(),
                 Recommendations.class
@@ -50,7 +50,7 @@ public class StarApplicationRestTemplateTest{
     }
 
     @Test
-    public void testRecommendationControllerEqualsId(){
+    public void testRecommendationControllerEqualsId() {
         ResponseEntity<Recommendations> response = restTemplate.getForEntity(
                 getUrl(),
                 Recommendations.class
@@ -59,7 +59,7 @@ public class StarApplicationRestTemplateTest{
     }
 
     @Test
-    public void testRecommendationControllerGetAllRecommendations(){
+    public void testRecommendationControllerGetAllRecommendations() {
         ResponseEntity<Recommendations> response = restTemplate.getForEntity(
                 getUrl(),
                 Recommendations.class

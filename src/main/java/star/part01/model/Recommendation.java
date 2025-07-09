@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Класс рекомендации, соответствующий первому этапу рабты
  */
-public class Recommendation {
+public class Recommendation{
     private final UUID id;
     private final String name;
     private final String annotation;

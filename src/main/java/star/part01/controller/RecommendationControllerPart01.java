@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/part01")
-public class RecommendationControllerPart01 {
+public class RecommendationControllerPart01{
     private final RecommendationRuleSet service;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationControllerPart01.class);
 
@@ -41,7 +41,7 @@ public class RecommendationControllerPart01 {
             responseCode = "200",
             description = "Сформирован список рекомендаций, либо пустой массив, если рекомендаций нет"
     )
-    public ResponseEntity<Recommendations> getRecommendation(@PathVariable UUID id){
+    public ResponseEntity<Recommendations> getRecommendation(@PathVariable UUID id) {
         logger.info("Запрос рекомендации для {}", id);
         return ResponseEntity.ok(service.getRecommendation(id).orElse(new Recommendations(id, new Recommendation[0])));
     }

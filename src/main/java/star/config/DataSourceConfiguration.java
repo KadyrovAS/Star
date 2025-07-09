@@ -19,10 +19,10 @@ import javax.sql.DataSource;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class DataSourceConfiguration {
+public class DataSourceConfiguration{
 
     @Bean(name = "rulesDataSourcePart01")
-    public DataSource rulesDataSourcePart01(@Value("${application.rules.part01.url}") String rulesUrl){
+    public DataSource rulesDataSourcePart01(@Value("${application.rules.part01.url}") String rulesUrl) {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setJdbcUrl(rulesUrl);
         dataSource.setDriverClassName("org.h2.Driver");
@@ -88,14 +88,14 @@ public class DataSourceConfiguration {
     @Bean(name = "rulesJdbcTemplatePart01")
     public JdbcTemplate rulesJdbcTemplatePart01(
             @Qualifier("rulesDataSourcePart01") DataSource dataSource
-    ){
+    ) {
         return new JdbcTemplate(dataSource);
     }
 
     @Bean(name = "rulesJdbcTemplatePart02")
     public JdbcTemplate rulesJdbcTemplatePart02(
             @Qualifier("rulesDataSourcePart02") DataSource dataSource
-    ){
+    ) {
         return new JdbcTemplate(dataSource);
     }
 

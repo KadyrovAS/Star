@@ -17,7 +17,7 @@ import java.util.UUID;
  * Используется для обеспечения работы telegram бота
  */
 @Service
-public class MessageHandler {
+public class MessageHandler{
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
     private final TelegramBot telegramBot;
     private final RecommendationRuleSet service;
@@ -30,50 +30,52 @@ public class MessageHandler {
 
     /**
      * Отправляет сообщение сервиса пользователю telegram
-     * @param id Идентификатор пользователя telegram, приславшего сообщение
+     *
+     * @param id      Идентификатор пользователя telegram, приславшего сообщение
      * @param message Текст сформированного сообщения
      */
-    private void sendMessageToUser(Long id, String message){
+    private void sendMessageToUser(Long id, String message) {
         telegramBot.execute(new SendMessage(id, message));
     }
 
     /**
      * Парсит сообщение, полученное от пользователя telegram
+     *
      * @param update Сообщение из telegram
      */
     public void put(Update update) {
         Long id = update.message().chat().id();
         String text = update.message().text();
-        String[]words = text.split(" ");
+        String[] words = text.split(" ");
 
-        if (words.length != 3){
+        if (words.length != 3) {
             sendMessageToUser(id, "incorrect message format");
             return;
         }
         String firstName = words[1];
         String lastName = words[2];
 
-        if (words[0].strip().equals("/recommend")){
+        if (words[0].strip().equals("/recommend")) {
             List<UUID> usersId = service.findUserIdByName(firstName, lastName);
-            if (usersId.size() != 1){
+            if (usersId.size() != 1) {
                 sendMessageToUser(id, String.format("The user %s %s was not found in the bank's database.",
                         firstName,
                         lastName));
                 return;
             }
             UUID userId = usersId.get(0);
-            List<Recommendation>recommendations = service.findRecommendationById(userId).orElse(null);
-            if (recommendations == null){
+            List<Recommendation> recommendations = service.findRecommendationById(userId).orElse(null);
+            if (recommendations == null) {
                 sendMessageToUser(id,
                         String.format("There are no recommendations for %s %s",
-                        firstName,
-                        lastName));
+                                firstName,
+                                lastName));
                 return;
             }
 
             StringBuilder line = new StringBuilder("We have the following recommendations for you\n");
             int count = 0;
-            for (Recommendation recommendation: recommendations){
+            for (Recommendation recommendation : recommendations) {
                 count++;
                 line.append(count + ". " + recommendation.getName() + "\n");
                 line.append(recommendation.getText() + "\n");

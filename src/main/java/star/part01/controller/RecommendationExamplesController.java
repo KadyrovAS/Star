@@ -14,7 +14,7 @@ import star.part01.service.RecommendationExampleService;
  */
 @RestController
 @RequestMapping("/part01/example")
-public class RecommendationExamplesController {
+public class RecommendationExamplesController{
     private final RecommendationExampleService service;
 
     public RecommendationExamplesController(RecommendationExampleService service) {
@@ -31,7 +31,7 @@ public class RecommendationExamplesController {
             description = "Сформирована база из 3-х рекомендаций и правил к ним"
     )
 
-    public ResponseEntity<String> insertExampleRecords(){
+    public ResponseEntity<String> insertExampleRecords() {
         service.addExample();
         return ResponseEntity.ok("Записи добавлены");
     }

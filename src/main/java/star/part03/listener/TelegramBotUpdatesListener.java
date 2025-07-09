@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Данный класс обеспечивает взаимодействие сервиса с телеграм
  */
-public class TelegramBotUpdatesListener implements UpdatesListener {
+public class TelegramBotUpdatesListener implements UpdatesListener{
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private final TelegramBot telegramBot;
@@ -35,7 +35,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     @Override
     public int process(List<Update> updates) {
-        for (Update update: updates){
+        for (Update update : updates) {
             messageHandler.put(update);
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;

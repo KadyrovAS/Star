@@ -19,7 +19,7 @@ import java.util.UUID;
  * виде.
  */
 @Repository
-public class StarRepositoryPart01 {
+public class StarRepositoryPart01{
     private final JdbcTemplate transactionsJdbcTemplate;
     private final JdbcTemplate rulesJdbcTemplate;
     private static final Logger logger = LoggerFactory.getLogger(StarRepositoryPart01.class);
@@ -31,7 +31,6 @@ public class StarRepositoryPart01 {
     }
 
     /**
-     *
      * @param id Идентификатор клиента банка
      * @return Список транзакций, сгруппированный по типу транзакций и типу банковских продуктов.
      * На основании этого списка осуществляется проверка выполнения банковских правил
@@ -42,11 +41,11 @@ public class StarRepositoryPart01 {
                 "SELECT PRODUCTS.TYPE AS PRODUCT_TYPE, TRANSACTIONS.TYPE AS TRANSACTION_TYPE, SUM(AMOUNT) AS AMOUNT FROM\n" +
                         "TRANSACTIONS LEFT JOIN PRODUCTS ON PRODUCT_ID = PRODUCTS.ID WHERE USER_ID = ?" +
                         " GROUP BY TRANSACTIONS.TYPE, PRODUCT_TYPE ",
-                (rs, rowNum)->new Transaction(
+                (rs, rowNum) -> new Transaction(
                         rs.getInt("AMOUNT"),
                         rs.getString("TRANSACTION_TYPE"),
                         rs.getString("PRODUCT_TYPE")
-                        ),
+                ),
                 id
         );
     }
@@ -67,21 +66,19 @@ public class StarRepositoryPart01 {
     }
 
     /**
-     *
      * @param id Идентификатор банковской рекомендации (установлен банком в ТЗ).
      * @return Список идентификаторов банковских правил (присваиваются сервисом)
      */
-    public List<UUID> getRulesById(UUID id){
-        logger.info("getRules by ID: {}", id );
+    public List<UUID> getRulesById(UUID id) {
+        logger.info("getRules by ID: {}", id);
         return rulesJdbcTemplate.query(
                 "SELECT RULE_ID FROM RECOMMENDATION_RULES WHERE RECOMMENDATION_ID = ?",
-                (rs, rowNum)->rs.getObject("RULE_ID", UUID.class),
+                (rs, rowNum) -> rs.getObject("RULE_ID", UUID.class),
                 id.toString()
         );
     }
 
     /**
-     *
      * @return Список всех банковских рекомендаций
      */
     public List<Recommendation> getRecommendations() {

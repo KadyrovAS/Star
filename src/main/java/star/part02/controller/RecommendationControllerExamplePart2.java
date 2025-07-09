@@ -16,7 +16,7 @@ import star.part02.service.RecommendationServiceExamplePart2;
 @RestController
 @RequestMapping("/ExamplePart2")
 
-public class RecommendationControllerExamplePart2 {
+public class RecommendationControllerExamplePart2{
     private final RecommendationServiceExamplePart2 service;
     Logger logger = LoggerFactory.getLogger(RecommendationControllerExamplePart2.class);
 
@@ -34,7 +34,7 @@ public class RecommendationControllerExamplePart2 {
     )
 
     @PostMapping
-    public void createDb(){
+    public void createDb() {
         service.createDb();
     }
 }

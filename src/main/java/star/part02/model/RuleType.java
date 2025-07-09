@@ -3,7 +3,7 @@ package star.part02.model;
 /**
  * Список команд, которые используются для формализации правил во второй части
  */
-public enum RuleType {
+public enum RuleType{
     /**
      * Команда USER_OF
      */

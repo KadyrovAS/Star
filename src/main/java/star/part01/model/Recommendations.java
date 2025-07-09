@@ -16,9 +16,9 @@ public class Recommendations{
 
     public Recommendations(UUID userId, Recommendation[] recommendations) {
         this.user_id = userId;
-        if (recommendations == null){
+        if (recommendations == null) {
             this.recommendations = new Recommendation[0];
-        }else {
+        } else {
             this.recommendations = recommendations;
         }
     }
@@ -28,9 +28,9 @@ public class Recommendations{
             @JsonProperty("user_id") UUID userId,
             @JsonProperty("recommendations") List<Recommendation> recommendations) {
         this.user_id = userId;
-        if (recommendations == null){
+        if (recommendations == null) {
             this.recommendations = new Recommendation[0];
-        }else {
+        } else {
             this.recommendations = recommendations.toArray(new Recommendation[recommendations.size()]);
         }
     }

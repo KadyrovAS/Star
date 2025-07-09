@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import star.part02.service.RecommendationRuleSet;
 import star.part03.model.InformationAboutPackage;
 import star.part03.model.Stat;
-import java.lang.Package;
 
 import java.util.Collections;
 import java.util.List;
 
 @RestController
-public class RecommendationControllerPart03 {
+public class RecommendationControllerPart03{
     private final RecommendationRuleSet service;
     private final BuildProperties buildProperties;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationControllerPart03.class);
@@ -74,9 +73,9 @@ public class RecommendationControllerPart03 {
     /**
      * Возвращает информацию о package: наименование и версия
      */
-    public InformationAboutPackage aboutService(){
+    public InformationAboutPackage aboutService() {
         return new InformationAboutPackage(
-               buildProperties.getName(),
+                buildProperties.getName(),
                 buildProperties.getVersion()
         );
     }

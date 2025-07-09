@@ -15,7 +15,10 @@ import star.part02.service.RuleMapper;
 import star.part03.model.SQLCreator;
 import star.part03.model.Stat;
 
-import java.util.*;
+import java.util.UUID;
+import java.util.Optional;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Обеспечивает взаимодействие с базами данных:
@@ -39,6 +42,7 @@ public class StarRepositoryPart02{
 
     /**
      * Возвращает банковское правило по индентификатору
+     *
      * @param id идентификатор правила
      * @return Правило банка
      */
@@ -47,7 +51,7 @@ public class StarRepositoryPart02{
         try {
             return rulesJdbcTemplate.queryForObject(
                     SQLCreator.SELECT_FROM_RULE,
-                    (rs, rowNum)->ruleMapper.getRule(rs),
+                    (rs, rowNum) -> ruleMapper.getRule(rs),
                     id.toString()
             );
         } catch (EmptyResultDataAccessException e) {
@@ -141,6 +145,7 @@ public class StarRepositoryPart02{
      * - CONTRACT_ID - id, установленный банком в id.
      * Добавляет в таблицу RULE_TO_RECOMMENDATION запись, обеспечивающую связь "many to many" между таблицами
      * RULE и RECOMMENDATION
+     *
      * @param recommendation
      */
     public void insertRecommendation(Recommendation recommendation) {
@@ -168,6 +173,7 @@ public class StarRepositoryPart02{
 
     /**
      * Удаляет правило по его идентификатору
+     *
      * @param id Идентификатор правила
      */
     private void deleteRule(UUID id) {
@@ -178,6 +184,7 @@ public class StarRepositoryPart02{
      * Удаляет рекомендацию по ее идентификатору CONTRACT_ID, установленному банком.
      * Записи с одинаковыми CONTRACT_ID означают выполнение логики OR
      * Также удаляются все связанные записи из таблиц RULE и RULE_TO_RECOMMENDATION
+     *
      * @param contractId Идентификатор, установленный банком
      */
     public void deleteRecommendation(UUID contractId) {
@@ -205,6 +212,7 @@ public class StarRepositoryPart02{
 
     /**
      * Возвращает список Transaction для клиента с заданным идентификатором
+     *
      * @param id Идентификатор клиента
      * @return Список транзакций клиента, сгруппированных по типу транзакций и типу банковских операций
      */
@@ -234,14 +242,15 @@ public class StarRepositoryPart02{
 
     /**
      * Возвращает идентификатор клиента по его имени и фамилии
+     *
      * @param firstName фамилия клиента
-     * @param lastName фамилия клиента
+     * @param lastName  фамилия клиента
      * @return
      */
-    public List<UUID> findUUIDByName(String firstName, String lastName){
+    public List<UUID> findUUIDByName(String firstName, String lastName) {
         return transactionsJdbcTemplate.query(
                 SQLCreator.SELECT_ID_FROM_USERS_BY_NAME,
-                (rs, rowNum)->UUID.fromString(rs.getString("ID")),
+                (rs, rowNum) -> UUID.fromString(rs.getString("ID")),
                 firstName,
                 lastName
         );
@@ -249,22 +258,23 @@ public class StarRepositoryPart02{
 
     /**
      * Обновляет таблицу со статистикой для каждого правила
+     *
      * @param ruleName Краткое название правила
      */
-    public void updateRuleStatistic(String ruleName){
-        List<Integer>results = rulesJdbcTemplate.query(
+    public void updateRuleStatistic(String ruleName) {
+        List<Integer> results = rulesJdbcTemplate.query(
                 SQLCreator.SELECT_FROM_RULE_STATISTICS_BY_ID,
-                (rs, rowNum)-> rs.getInt("COUNT"),
+                (rs, rowNum) -> rs.getInt("COUNT"),
                 ruleName
         );
-        if (results.size() == 1){
+        if (results.size() == 1) {
             int count = results.get(0) + 1;
             rulesJdbcTemplate.update(
                     SQLCreator.UPDATE_RULE_STATISTICS,
                     count,
                     ruleName
             );
-        }else{
+        } else {
             rulesJdbcTemplate.update(
                     SQLCreator.INSERT_INTO_RULE_STATISTICS,
                     ruleName,
@@ -275,16 +285,17 @@ public class StarRepositoryPart02{
 
     /**
      * Возвращает список результатов статистического сбора информации
+     *
      * @return
      */
-   public Optional<List<Stat>>getStat(){
-        List<Stat>stats = rulesJdbcTemplate.query(
+    public Optional<List<Stat>> getStat() {
+        List<Stat> stats = rulesJdbcTemplate.query(
                 SQLCreator.SELECT_ALL_RECORDS_FROM_RULE_STATISTICS,
-                (rs, rowNum)->new Stat(
+                (rs, rowNum) -> new Stat(
                         rs.getString("RULE_NAME"),
                         rs.getInt("COUNT")
                 )
         );
         return Optional.of(stats);
-   }
+    }
 }

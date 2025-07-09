@@ -13,7 +13,7 @@ import star.part01.model.RuleToRecommendation;
  * Заполняет базу данных recommendationsPart01.mv.db рекомендациями банка в формализованном виде
  */
 @Repository
-public class RecommendationExampleRepository {
+public class RecommendationExampleRepository{
     private final JdbcTemplate jdbcTemplate;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationExampleRepository.class);
 
@@ -23,9 +23,10 @@ public class RecommendationExampleRepository {
 
     /**
      * Добавляет рекомендацию в таблицу RECOMMENDATION
+     *
      * @param recommendation Рекомендация банка (устанавливается банком в ТЗ)
      */
-    public void addRecommendation(Recommendation recommendation){
+    public void addRecommendation(Recommendation recommendation) {
         logger.info("addRecommendation");
         String sql = "INSERT INTO RECOMMENDATION (ID, NAME, ANNOTATION) VALUES (?, ?, ?)";
         jdbcTemplate.update(
@@ -39,9 +40,10 @@ public class RecommendationExampleRepository {
     /**
      * Добавляет правило в таблицу RULE.
      * Поле INSTRUCTION - содержит правило в формализованном виде
+     *
      * @param rule Правило. Устанавливается банком.
      */
-    public void addRule(Rule rule){
+    public void addRule(Rule rule) {
         logger.info("addRule");
         jdbcTemplate.update(
                 "INSERT INTO RULE (ID, INSTRUCTION, ANNOTATION) VALUES (?, ?, ?)",
@@ -55,9 +57,10 @@ public class RecommendationExampleRepository {
      * Разные банковские рекомендации могут иметь одинаковые правила.
      * Метод добавляет запись в таблицу RECOMMENDATION_RULES, обеспечивающей связь "many to many" между таблицами
      * RULE и RECOMMENDATION
+     *
      * @param ruleToRecommendation
      */
-    public void addRecommendationRules(RuleToRecommendation ruleToRecommendation){
+    public void addRecommendationRules(RuleToRecommendation ruleToRecommendation) {
         logger.info("addRecommendationRules");
         jdbcTemplate.update(
                 "INSERT INTO RECOMMENDATION_RULES (RECOMMENDATION_ID, RULE_ID) VALUES (?, ?)",
@@ -69,7 +72,7 @@ public class RecommendationExampleRepository {
     /**
      * Перед добавлением рекомендаций и правил все записи из всех таблиц базы данных удаляются
      */
-    public void deleteAll(){
+    public void deleteAll() {
         logger.info("deleteAll");
         jdbcTemplate.update("DELETE FROM RECOMMENDATION");
         jdbcTemplate.update("DELETE FROM RECOMMENDATION_RULES");

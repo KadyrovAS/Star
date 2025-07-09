@@ -76,7 +76,6 @@ public class DiagramCreator{
         try {
             Class clazzz = Class.forName(fileName);
         } catch (ClassNotFoundException e) {
-            System.out.println(fileName);
             return result;
         }
 
@@ -189,6 +188,6 @@ public class DiagramCreator{
         DiagramCreator diagramCreator = new DiagramCreator("");
         diagramCreator.addException("Example");
         diagramCreator.addException("DataSourceConfiguration");
-        diagramCreator.getListFiles("diagram");
+        diagramCreator.getListFiles("diagrams/diagram");
     }
 }

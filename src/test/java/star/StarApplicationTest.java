@@ -22,7 +22,7 @@ public class StarApplicationTest{
     }
 
     @Test
-    void contextRecommendationExamplesController(){
+    void contextRecommendationExamplesController() {
         assertThat(recommendationExamplesController).isNotNull();
     }
 }

@@ -10,13 +10,17 @@ import star.part02.model.Transaction;
 import star.part02.repository.StarRepositoryPart02;
 import star.part03.model.Stat;
 
-import java.util.*;
+import java.util.Map;
+import java.util.List;
+import java.util.UUID;
+import java.util.Optional;
+import java.util.HashMap;
 
 /**
  * Обеспечивает подбор рекомендаций банка для клиента по их идентификатору
  */
 @Component("servicePart02")
-public class RecommendationService implements RecommendationRuleSet {
+public class RecommendationService implements RecommendationRuleSet{
     private final StarRepositoryPart02 repository;
     private static final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
@@ -26,6 +30,7 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Проверяет выполнение правил банка и возвращает список рекомендаций для клиента с заданным идентификатором
+     *
      * @param id Идентификатор клиента
      * @return Список рекомендаций
      */
@@ -40,7 +45,7 @@ public class RecommendationService implements RecommendationRuleSet {
             for (Rule rule : recommendation.getRules()) {
                 if (!checkRule(rule, transactions)) {
                     isRecommend = false;
-                }else {
+                } else {
                     repository.updateRuleStatistic(rule.getQuery());
                 }
             }
@@ -54,6 +59,7 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Добавляет рекомендацию в базу данных
+     *
      * @param recommendation Рекомендация
      */
     @Override
@@ -63,6 +69,7 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Удаляет рекомендацию с идентификатором, указанным банком в ТЗ
+     *
      * @param contractId Идентификатор рекомендации, указанный в ТЗ
      */
     @Override
@@ -80,7 +87,8 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Проверяет выполнение правил для клиента
-     * @param rule Правило
+     *
+     * @param rule         Правило
      * @param transactions Список транзакций клиента
      * @return true или false, в зависимости от того, выполняется правило или нет
      */
@@ -102,7 +110,8 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Проверяет выполнение команды USER_OF
-     * @param rule правило
+     *
+     * @param rule         правило
      * @param transactions список транзакций клиента
      * @return true или false
      */
@@ -117,7 +126,8 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Проверяет выполнение команды ACTIVE_USER_OF
-     * @param rule Правило
+     *
+     * @param rule         Правило
      * @param transactions Список транзакций клиента
      * @return true или false
      */
@@ -133,7 +143,8 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Прверяет выполнение команды TRANSACTION_SUM_COMPARE
-     * @param rule Правило
+     *
+     * @param rule         Правило
      * @param transactions Список транзакций клиента
      * @return true или false
      */
@@ -155,7 +166,8 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Проверяет выполнение команды TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW
-     * @param rule правило
+     *
+     * @param rule         правило
      * @param transactions список транзакций
      * @return true или false
      */
@@ -179,6 +191,7 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Выполняет операцию сравнения для двух аргументов
+     *
      * @param arg1 аргумент 1
      * @param arg2 аргумент 2
      * @param comp знак сравнения
@@ -198,8 +211,9 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Возвращает список идентификаторов клиентов по их имени и фамилии
+     *
      * @param firstName имя клиента
-     * @param lastName фамилия клиента
+     * @param lastName  фамилия клиента
      * @return список идентификаторов
      */
     @Override
@@ -209,6 +223,7 @@ public class RecommendationService implements RecommendationRuleSet {
 
     /**
      * Возвращает список статистики о выполнении каждого правила
+     *
      * @return список статистики о выполнении каждого правила
      */
     @Override

@@ -5,7 +5,7 @@ package star.part01.model;
  * Используется для проверки выполнения правил банка для клиента
  */
 
-public class Transaction {
+public class Transaction{
     private final int amount;
     private final String transactionType;
     private final String productType;

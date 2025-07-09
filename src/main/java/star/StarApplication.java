@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @OpenAPIDefinition
-public class StarApplication {
-    public static void main(String[] args){
+public class StarApplication{
+    public static void main(String[] args) {
         SpringApplication.run(StarApplication.class);
     }
 }
