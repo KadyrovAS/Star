@@ -1,5 +1,6 @@
 package star.part01.controller;
 
+import com.dom_dom.metrics.annotation.TimedMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
@@ -32,6 +33,11 @@ public class RecommendationControllerPart01{
         this.service = service;
     }
 
+    @TimedMethod(
+            value = "getRecommendation", // Кастомное имя для метрики (опционально)
+            description = "Получение рекомендаций для клиента по ID",
+            extraTags = {"service", "recommendation", "version", "v1"}
+    )
     @GetMapping(value = "/recommendation/{id}")
     @Operation(
             summary = "Получить рекомендации для клиента по ID",

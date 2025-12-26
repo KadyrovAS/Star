@@ -73,6 +73,25 @@
 			<artifactId>java-telegram-bot-api</artifactId>
 			<version>5.7.0</version>
 		</dependency>
+
+        <!-- СТАРТЕР для сбора метрик методов -->
+        <dependency>
+            <groupId>com.dom_dom</groupId>
+            <artifactId>method-metrics-spring-boot-starter</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Spring Boot Actuator для предоставления эндпоинтов (обязательно) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Micrometer Prometheus registry для формата метрик (обязательно) -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>

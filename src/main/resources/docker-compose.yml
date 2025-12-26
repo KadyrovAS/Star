@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Prometheus - система сбора метрик
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"  # Доступ к веб-интерфейсу Prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Монтируем конфиг
+      - prometheus_data:/prometheus  # Монтируем том для данных
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  # Grafana - система визуализации метрик
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"  # Доступ к веб-интерфейсу Grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Пароль для входа
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:
+  grafana_data:
